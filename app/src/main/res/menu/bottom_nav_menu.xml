@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/baseline_keyboard_backspace_24"
+        android:icon="@drawable/baseline_home_24"
         android:title="Home" />
     <item
         android:id="@+id/nav_notifications"
-        android:icon="@drawable/baseline_keyboard_backspace_24"
+        android:icon="@drawable/baseline_doorbell_24"
         android:title="Notifications" />
     <item
         android:id="@+id/nav_history"
-        android:icon="@drawable/baseline_keyboard_backspace_24"
+        android:icon="@drawable/baseline_access_time_24"
         android:title="History" />
     <item
         android:id="@+id/nav_more"
-        android:icon="@drawable/baseline_keyboard_backspace_24"
+        android:icon="@drawable/baseline_more_horiz_24"
         android:title="More" />
 </menu>

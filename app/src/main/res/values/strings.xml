@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">restaurant-reservation-application</string>
+    <string name="continue_as">
+        Continue as Guest
+    </string>
+
+<!--    <string name="sign_up_wit">-->
+<!--Sign up With Email-->
+<!--</string>-->
+
+<!--    &lt;!&ndash; strings.xml &ndash;&gt;-->
+<!--    <string name="sign_up_wit">-->
+<!--Sign up With Phone-->
+<!--</string>-->
+    <string name="or">
+or
+</string>
+
+    <string name="dine_inflor">
+Dine-inFlorida
+</string>
+    <string name="sign_up_for">
+Sign up for an account to receive 2% off your bill on every reservation!
+</string>
 </resources>
