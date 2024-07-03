@@ -175,7 +175,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView15"
+                    android:id="@+id/seeAllRBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="see all"
@@ -229,7 +229,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/textView17"
+                    android:id="@+id/seeAllPBtn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="See all"

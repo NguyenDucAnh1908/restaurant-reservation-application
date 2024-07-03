@@ -1,5 +1,6 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -67,6 +68,10 @@ public class MainActivity extends BaseActivity {
                     binding.progressBarPopular.setVisibility(View.GONE);
 
                 }
+                binding.seeAllPBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(MainActivity.this, ListRestaurentsActivity.class);
+                    startActivity(intent);
+                });
             }
 
             @Override
@@ -97,7 +102,12 @@ public class MainActivity extends BaseActivity {
                     binding.progressBarRecommended.setVisibility(View.GONE);
 
                 }
+                binding.seeAllRBtn.setOnClickListener(v -> {
+                    Intent intent = new Intent(MainActivity.this, ListRestaurentsActivity.class);
+                    startActivity(intent);
+                });
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
