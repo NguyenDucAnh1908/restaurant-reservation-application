@@ -51,4 +51,6 @@ dependencies {
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.google.code.gson:gson:2.9.1")
     implementation ("com.github.bumptech.glide:glide:4.12.0")
+    implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
+    implementation("androidx.viewpager2:viewpager2:1.1.0")
 }
