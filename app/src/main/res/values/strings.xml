@@ -4,14 +4,14 @@
         Continue as Guest
     </string>
 
-<!--    <string name="sign_up_wit">-->
-<!--Sign up With Email-->
-<!--</string>-->
+    <!--    <string name="sign_up_wit">-->
+    <!--Sign up With Email-->
+    <!--</string>-->
 
-<!--    &lt;!&ndash; strings.xml &ndash;&gt;-->
-<!--    <string name="sign_up_wit">-->
-<!--Sign up With Phone-->
-<!--</string>-->
+    <!--    &lt;!&ndash; strings.xml &ndash;&gt;-->
+    <!--    <string name="sign_up_wit">-->
+    <!--Sign up With Phone-->
+    <!--</string>-->
     <string name="or">
 or
 </string>
