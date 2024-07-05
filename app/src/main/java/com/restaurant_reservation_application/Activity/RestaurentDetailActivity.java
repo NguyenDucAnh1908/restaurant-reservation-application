@@ -3,6 +3,7 @@ package com.restaurant_reservation_application.Activity;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.DatePicker;
@@ -22,6 +23,9 @@ import java.util.Calendar;
 public class RestaurentDetailActivity extends BaseActivity {
     ActivityRestaurentDetailBinding binding;
     private Restaurents object;
+    private String selectedDate;
+    private String selectedTime;
+    private String selectedPerson;
 
 
     @Override
@@ -34,6 +38,24 @@ public class RestaurentDetailActivity extends BaseActivity {
         setPickDate();
         setPickTime();
         setPickPerson();
+        getDateAndTime();
+        getPerson();
+    }
+
+    private void getPerson() {
+    }
+
+    private void getDateAndTime() {
+        binding.findSlotBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RestaurentDetailActivity.this, ReserveActivity.class);
+                intent.putExtra("selectedDate", selectedDate);
+                intent.putExtra("selectedTime", selectedTime);
+                intent.putExtra("selectedPerson", selectedPerson);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setPickPerson() {
@@ -57,7 +79,8 @@ public class RestaurentDetailActivity extends BaseActivity {
                 if (selectedPeople.equals("More")) {
                     showCustomPeopleInputDialog();
                 } else {
-                    binding.personViewTxt.setText(selectedPeople);
+                    selectedPerson = selectedPeople; //
+                    binding.personViewTxt.setText(selectedPerson);
                 }
             }
         });
@@ -78,7 +101,8 @@ public class RestaurentDetailActivity extends BaseActivity {
             public void onClick(DialogInterface dialog, int which) {
                 String customPeople = input.getText().toString();
                 if (!customPeople.isEmpty()) {
-                    binding.personViewTxt.setText(customPeople);
+                    selectedPerson = customPeople; //
+                    binding.personViewTxt.setText(selectedPerson);
                 }
             }
         });
@@ -110,17 +134,14 @@ public class RestaurentDetailActivity extends BaseActivity {
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                binding.timeViewTxt.setText(String.format("%02d:%02d", hourOfDay, minute));
+                selectedTime = String.format("%02d:%02d", hourOfDay, minute);
+                binding.timeViewTxt.setText(selectedTime);
             }
         }, hour, minute, true); // Set 'true' for 24-hour time format, 'false' for AM/PM format
         dialog.show();
     }
 
-
     private void setPickDate() {
-         TextView datePickTxt, dateViewTxt;
-        //datePickTxt = findViewById(R.id.datePickBtn);
-        //dateViewTxt = findViewById(R.id.dateViewTxt);
         binding.datePickBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -137,7 +158,8 @@ public class RestaurentDetailActivity extends BaseActivity {
         DatePickerDialog dialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                binding.dateViewTxt.setText(String.valueOf(dayOfMonth) + "/" + String.valueOf(month) + "/" + String.valueOf(year));
+                selectedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+                binding.dateViewTxt.setText(selectedDate);
             }
         }, year, month, day);
         dialog.show();
