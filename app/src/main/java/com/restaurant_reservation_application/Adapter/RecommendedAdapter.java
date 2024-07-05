@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.restaurant_reservation_application.Activity.RestaurentDetailActivity;
 import com.restaurant_reservation_application.Model.Restaurents;
 import com.restaurant_reservation_application.databinding.ViewholderRecommendedBinding;
 
@@ -42,14 +43,14 @@ public class RecommendedAdapter extends RecyclerView.Adapter<RecommendedAdapter.
                 .load(items.get(position).getImage())
                 .into(binding.pic);
 
-//        holder.itemView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(context, DetailActivity.class);
-//                intent.putExtra("object", items.get(position));
-//                context.startActivity(intent);
-//            }
-//        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, RestaurentDetailActivity.class);
+                intent.putExtra("object", items.get(position));
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
