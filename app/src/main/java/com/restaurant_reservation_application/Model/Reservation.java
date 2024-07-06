@@ -1,7 +1,10 @@
 package com.restaurant_reservation_application.Model;
 
-public class Reservation {
-    private String Id;
+import java.io.Serializable;
+
+
+public class Reservation implements Serializable {
+    private int Id;
     private int TransactionId;
     private String StartTime;
     private String EndTime;
@@ -12,11 +15,10 @@ public class Reservation {
     private int UserId;
     private int TableId;
 
-    // Default constructor required for calls to DataSnapshot.getValue(Reservation.class)
     public Reservation() {
     }
 
-    public Reservation(String id, int transactionId, String startTime, String endTime, String date, String name, String phoneNumber, int people, int userId, int tableId) {
+    public Reservation(int id, int transactionId, String startTime, String endTime, String date, String name, String phoneNumber, int people, int userId, int tableId) {
         Id = id;
         TransactionId = transactionId;
         StartTime = startTime;
@@ -29,12 +31,11 @@ public class Reservation {
         TableId = tableId;
     }
 
-    // Getters and setters
-    public String getId() {
+    public int getId() {
         return Id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         Id = id;
     }
 
@@ -110,3 +111,5 @@ public class Reservation {
         TableId = tableId;
     }
 }
+
+

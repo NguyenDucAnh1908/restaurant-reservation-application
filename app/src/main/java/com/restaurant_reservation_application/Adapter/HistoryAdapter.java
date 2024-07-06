@@ -1,63 +1,67 @@
 package com.restaurant_reservation_application.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.restaurant_reservation_application.Model.HistoryModel;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.R;
+import com.restaurant_reservation_application.databinding.ViewholderHistoryBinding;
+import com.restaurant_reservation_application.databinding.ViewholderPopularBinding;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public class HistoryAdapter extends BaseAdapter {
-    private Context context;
-    private List<HistoryModel> historyItems;
 
-    public HistoryAdapter(Context context, List<HistoryModel> historyItems) {
-        this.context = context;
-        this.historyItems = historyItems;
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
+
+    ArrayList<Reservation> items;
+    Context context;
+
+    public HistoryAdapter(ArrayList<Reservation> items) {
+        this.items = items;
+    }
+
+    @NonNull
+    @Override
+    public HistoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        View itemView = inflater.inflate(R.layout.viewholder_history, parent, false);
+        context = parent.getContext();
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public int getCount() {
-        return historyItems.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return historyItems.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = LayoutInflater.from(context).inflate(R.layout.item_history, parent, false);
+    public void onBindViewHolder(@NonNull HistoryAdapter.ViewHolder holder, int position) {
+        Reservation reservation = items.get(position);
+        if (reservation != null) {
+            holder.titleTxt.setText(reservation.getName());
+            holder.dateAndTimeTxt.setText(reservation.getDate() + " | " + reservation.getStartTime());
+            holder.peopleTxt.setText(String.valueOf(reservation.getPeople()));
+        } else {
+            Log.e("AdapterData", "Reservation at position " + position + " is null");
         }
+    }
 
-        TextView tvRestaurantName = convertView.findViewById(R.id.tv_restaurant_name);
-        TextView tvTimeAgo = convertView.findViewById(R.id.tv_time_ago);
-        TextView tvStatus = convertView.findViewById(R.id.tv_status);
-        TextView tvCancelBooking = convertView.findViewById(R.id.tv_cancel_booking);
-        TextView tvDateTime = convertView.findViewById(R.id.tv_date_time);
-        TextView tvGuests = convertView.findViewById(R.id.tv_guests);
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
 
-        HistoryModel item = historyItems.get(position);
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView titleTxt, dateAndTimeTxt, peopleTxt;
 
-        tvRestaurantName.setText(item.getRestaurantName());
-        tvTimeAgo.setText(item.getTimeAgo());
-        tvStatus.setText(item.getStatus());
-        tvCancelBooking.setText(item.getCancelBooking());
-        tvDateTime.setText(item.getDateTime());
-        tvGuests.setText(item.getGuests());
-
-        return convertView;
+        public ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            titleTxt = itemView.findViewById(R.id.titleTxt);
+            dateAndTimeTxt = itemView.findViewById(R.id.dateAndTimeTxt);
+            peopleTxt = itemView.findViewById(R.id.peopleTxt);
+        }
     }
 }

@@ -15,9 +15,9 @@
         <activity
             android:name=".Activity.ReserveActivity"
             android:exported="false" />
-        <activity
-            android:name=".Activity.DetailActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".Activity.HistoryActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".Activity.RestaurentDetailActivity"
             android:exported="false" />
@@ -33,11 +33,11 @@
         <activity
             android:name=".Activity.SignInActivity"
             android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".Activity.HistoryActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".Activity.HistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

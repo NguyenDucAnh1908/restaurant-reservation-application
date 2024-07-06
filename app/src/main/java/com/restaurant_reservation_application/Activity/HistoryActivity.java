@@ -1,6 +1,7 @@
 package com.restaurant_reservation_application.Activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -11,62 +12,105 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.restaurant_reservation_application.Adapter.HistoryAdapter;
+import com.restaurant_reservation_application.Adapter.PopularAdapter;
 import com.restaurant_reservation_application.Model.HistoryModel;
+import com.restaurant_reservation_application.Model.Reservation;
+import com.restaurant_reservation_application.Model.Restaurents;
 import com.restaurant_reservation_application.R;
+import com.restaurant_reservation_application.databinding.ActivityHistoryBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HistoryActivity extends AppCompatActivity {
-    private ListView historyListView;
-    private List<HistoryModel> historyItems;
-    private BottomNavigationView bottomNavigationView;
+public class HistoryActivity extends BaseActivity {
+    ActivityHistoryBinding binding;
+
+    private RecyclerView.Adapter adapterHistory;
+    private int categoryId;
+    private String categoryName;
+    private String searchText;
+    private boolean isSearch;
+    private ChipNavigationBar chipNavigationBar;
+    private DatabaseReference databaseReference;
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
+        binding = ActivityHistoryBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        historyListView = findViewById(R.id.history_list_view);
-        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        database = FirebaseDatabase.getInstance(); // Khởi tạo database
+        setupBottomNavigationBar();
+        initList();
+        getIntenExtra();
+    }
 
-        // Tạo dữ liệu mẫu
-        historyItems = new ArrayList<>();
-        historyItems.add(new HistoryModel("Sea Grill of Merrick Park", "2 hrs ago", "Reserved", "Cancel Booking", "17 December 2022 | 12:15 PM", "2 Guests"));
-        historyItems.add(new HistoryModel("Sea Grill of Merrick Park", "2 Days ago", "Cancelled", "", "17 December 2022 | 12:15 PM", "2 Guests"));
-        historyItems.add(new HistoryModel("Sea Grill of Merrick Park", "10 Days ago", "Completed", "", "17 December 2022 | 12:15 PM", "2 Guests"));
+    private void initList() {
+    }
 
-        HistoryAdapter adapter = new HistoryAdapter(this, historyItems);
-        historyListView.setAdapter(adapter);
-
-        // Xử lý sự kiện cho Bottom Navigation
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private void getIntenExtra() {
+        databaseReference = database.getReference("Reservation");
+        binding.progressBarHistory.setVisibility(View.VISIBLE);
+        ArrayList<Reservation> list = new ArrayList<>();
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int itemId = item.getItemId();
-
-                if (itemId == R.id.nav_home) {
-                    // Chuyển sang màn hình Home
-                    // startActivity(new Intent(HistoryActivity.this, HomeActivity.class));
-                    return true;
-                } else if (itemId == R.id.nav_notifications) {
-                    // Chuyển sang màn hình Notifications
-                    // startActivity(new Intent(HistoryActivity.this, NotificationsActivity.class));
-                    return true;
-                } else if (itemId == R.id.nav_history) {
-                    // Đang ở màn hình History
-                    return true;
-                } else if (itemId == R.id.nav_more) {
-                    // Chuyển sang màn hình More
-                    // startActivity(new Intent(HistoryActivity.this, MoreActivity.class));
-                    return true;
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot issue : snapshot.getChildren()) {
+//                        Reservation reservation = issue.getValue(Reservation.class);
+//                        if (reservation != null) {
+//                            list.add(reservation);
+//                        }
+                        list.add(issue.getValue(Reservation.class));
+                    }
+                    if (!list.isEmpty()) {
+                        binding.historyView.setLayoutManager(new LinearLayoutManager(HistoryActivity.this, LinearLayoutManager.VERTICAL, false));
+                        adapterHistory = new HistoryAdapter(list);
+                        binding.historyView.setAdapter(adapterHistory);
+                    }
+                    binding.progressBarHistory.setVisibility(View.GONE);
                 }
+            }
 
-                return false;
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                binding.progressBarHistory.setVisibility(View.GONE);
+                // Handle error
+            }
+        });
+    }
+
+
+    private void setupBottomNavigationBar() {
+        chipNavigationBar = binding.chipNavigationBar; // Thêm dòng này
+        chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int id) {
+                if (id == R.id.nav_home) {
+                    startActivity(new Intent(HistoryActivity.this, MainActivity.class));
+                } else if (id == R.id.nav_notifications) {
+                    // Handle Notifications navigation
+                    // startActivity(new Intent(HistoryActivity.this, NotificationsActivity.class));
+                } else if (id == R.id.nav_history) {
+                    // Currently on the History screen
+                } else if (id == R.id.nav_more) {
+                    // Handle More navigation
+                    // startActivity(new Intent(HistoryActivity.this, MoreActivity.class));
+                }
             }
         });
     }
 }
+

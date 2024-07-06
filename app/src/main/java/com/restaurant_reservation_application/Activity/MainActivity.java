@@ -20,6 +20,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.restaurant_reservation_application.Adapter.CategoryAdapter;
 import com.restaurant_reservation_application.Adapter.PopularAdapter;
 import com.restaurant_reservation_application.Adapter.RecommendedAdapter;
@@ -46,7 +47,27 @@ public class MainActivity extends BaseActivity {
         initCategory();
         initRecommend();
         initPopular();
+        setupBottomNavigationBar();
     }
+
+    private void setupBottomNavigationBar() {
+        binding.chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int id) {
+                if (id == R.id.nav_home) {
+                    // Handle Home navigation
+                } else if (id == R.id.nav_notifications) {
+                    // Handle Notifications navigation
+                } else if (id == R.id.nav_history) {
+                    Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_more) {
+                    // Handle More navigation
+                }
+            }
+        });
+    }
+
 
     private void initPopular() {
         DatabaseReference myRef = database.getReference("Restaurants");

@@ -1,19 +1,26 @@
 package com.restaurant_reservation_application.Activity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
@@ -49,22 +56,47 @@ public class ReserveActivity extends BaseActivity {
         String phoneNumber = binding.phoneNumberTxt.getText().toString();
         String email = binding.emailTxt.getText().toString(); // Optional field
 
-        // Generate unique ID for the reservation
-        String reservationId = databaseReference.push().getKey();
+        // Reference to ReservationIdCounter node
+        DatabaseReference reservationIdReference = database.getReference("ReservationIdCounter");
 
-        // Create a reservation object
-        Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, 1, 1);
-
-        if (reservationId != null) {
-            databaseReference.child(reservationId).setValue(reservation).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    showSuccessDialog(reservation);
+        // Run transaction to get and increment the reservation ID
+        reservationIdReference.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                Integer currentValue = currentData.getValue(Integer.class);
+                if (currentValue == null) {
+                    currentData.setValue(1);
                 } else {
-                    Toast.makeText(ReserveActivity.this, "Failed to save reservation", Toast.LENGTH_SHORT).show();
+                    currentData.setValue(currentValue + 1);
                 }
-            });
-        }
+                return Transaction.success(currentData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                if (committed) {
+                    int reservationId = currentData.getValue(Integer.class);
+
+                    // Create a reservation object
+                    Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, 1, 1);
+
+                    // Save reservation to Firebase
+                    databaseReference.child(String.valueOf(reservationId)).setValue(reservation).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            showSuccessDialog(reservation);
+                        } else {
+                            Toast.makeText(ReserveActivity.this, "Failed to save reservation", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                } else {
+                    // Handle error
+                    Log.e("Firebase", "Failed to get reservation ID");
+                }
+            }
+        });
     }
+
 
     private void showSuccessDialog(Reservation reservation) {
         // Inflate the custom layout
