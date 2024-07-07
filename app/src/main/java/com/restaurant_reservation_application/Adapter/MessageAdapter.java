@@ -1,3 +1,4 @@
+// MessageAdapter.java
 package com.restaurant_reservation_application.Adapter;
 
 import android.content.Context;
@@ -10,23 +11,18 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.restaurant_reservation_application.Model.Message;
 import com.restaurant_reservation_application.R;
 
 import java.util.List;
+
 public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final int VIEW_TYPE_CHAT = 0;
     private static final int VIEW_TYPE_REPLY = 1;
     private List<Message> messages;
-    private Context context;
-    private String currentUserId;
 
-    public MessageAdapter(List<Message> messages, Context context, String currentUserId) {
+    public MessageAdapter(List<Message> messages) {
         this.messages = messages;
-        this.context = context;
-        this.currentUserId = currentUserId;
     }
 
     @Override
@@ -59,6 +55,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         Message message = messages.get(position);
+
         switch (holder.getItemViewType()) {
             case VIEW_TYPE_CHAT:
                 ((ChatViewHolder) holder).bind(message);
@@ -125,7 +122,5 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 textDate.setVisibility(View.GONE);
             }
         }
-
     }
-
 }
