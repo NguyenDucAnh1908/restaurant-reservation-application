@@ -22,14 +22,18 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.restaurant_reservation_application.Model.Reservation;
+import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
+
+import java.util.List;
 
 public class ReserveActivity extends BaseActivity {
     ActivityReserveBinding binding;
     String selectedDate;
     String selectedTime;
     String selectedPerson;
+    Tables table;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,7 +83,7 @@ public class ReserveActivity extends BaseActivity {
                     int reservationId = currentData.getValue(Integer.class);
 
                     // Create a reservation object
-                    Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, 1, 1);
+                    Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, 1, table.getId());
 
                     // Save reservation to Firebase
                     databaseReference.child(String.valueOf(reservationId)).setValue(reservation).addOnCompleteListener(task -> {
@@ -96,7 +100,6 @@ public class ReserveActivity extends BaseActivity {
             }
         });
     }
-
 
     private void showSuccessDialog(Reservation reservation) {
         // Inflate the custom layout
@@ -134,7 +137,7 @@ public class ReserveActivity extends BaseActivity {
         selectedDate = getIntent().getStringExtra("selectedDate");
         selectedTime = getIntent().getStringExtra("selectedTime");
         selectedPerson = getIntent().getStringExtra("selectedPerson");
-
+        table = (Tables) getIntent().getSerializableExtra("table");
         // Set the date and time in the respective TextViews
         binding.dateAndTimeTxt.setText(selectedDate + " | " + selectedTime);
         binding.peopleTxt.setText(selectedPerson);

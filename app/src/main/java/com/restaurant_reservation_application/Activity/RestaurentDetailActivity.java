@@ -6,19 +6,36 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.Restaurents;
+import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityRestaurentDetailBinding;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+
+import www.sanju.motiontoast.MotionToast;
+import www.sanju.motiontoast.MotionToastStyle;
 
 public class RestaurentDetailActivity extends BaseActivity {
     ActivityRestaurentDetailBinding binding;
@@ -26,6 +43,12 @@ public class RestaurentDetailActivity extends BaseActivity {
     private String selectedDate;
     private String selectedTime;
     private String selectedPerson;
+    private int tableTypeId; // 0 for Normal, 1 for VIP
+    private CheckBox cbNormal, cbVip;
+    private DatabaseReference databaseReference;
+    private List<Tables> bookedTables = new ArrayList<>();
+
+    private List<Tables> availableTables = new ArrayList<>();
 
 
     @Override
@@ -40,6 +63,31 @@ public class RestaurentDetailActivity extends BaseActivity {
         setPickPerson();
         getDateAndTime();
         getPerson();
+        setupCheckBoxes();
+    }
+    private void setupCheckBoxes() {
+        cbNormal = findViewById(R.id.cbNormal);
+        cbVip = findViewById(R.id.cbVip);
+
+        cbNormal.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    cbVip.setChecked(false);
+                    tableTypeId = 0; // Normal selected
+                }
+            }
+        });
+
+        cbVip.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    cbNormal.setChecked(false);
+                    tableTypeId = 1; // VIP selected
+                }
+            }
+        });
     }
 
     private void getPerson() {
@@ -49,13 +97,130 @@ public class RestaurentDetailActivity extends BaseActivity {
         binding.findSlotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(RestaurentDetailActivity.this, ReserveActivity.class);
-                intent.putExtra("selectedDate", selectedDate);
-                intent.putExtra("selectedTime", selectedTime);
-                intent.putExtra("selectedPerson", selectedPerson);
-                startActivity(intent);
+                checkReservations();
             }
         });
+    }
+
+
+    private void checkReservations() {
+        DatabaseReference reservationRef = FirebaseDatabase.getInstance().getReference("Reservation");
+        reservationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Integer> bookedTableIds = new ArrayList<>();
+                for (DataSnapshot reservationSnapshot : dataSnapshot.getChildren()) {
+                    Reservation reservation = reservationSnapshot.getValue(Reservation.class);
+
+                    // Parse startTime to determine the end time (1h30 later)
+                    String startTime = reservation.getStartTime();
+                    String endTime = calculateEndTime(startTime);
+
+                    // Check if selectedTime is within the range from startTime to endTime
+                    if (isWithinTimeRange(selectedTime, startTime, endTime) && reservation.getDate().equals(selectedDate)) {
+                        bookedTableIds.add(reservation.getTableId());
+                    }
+                }
+
+                // After fetching booked table IDs, filter by TableType and Restaurant ID
+                getTablesFromIds(bookedTableIds, object.getId(), tableTypeId);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(RestaurentDetailActivity.this, "Error checking reservations", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    private void getTablesFromIds(List<Integer> bookedTableIds, int restaurantId, int tableTypeId) {
+        DatabaseReference tableRef = FirebaseDatabase.getInstance().getReference("Tables");
+        tableRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                bookedTables.clear();
+                availableTables.clear();
+
+                for (DataSnapshot tableSnapshot : dataSnapshot.getChildren()) {
+                    Tables table = tableSnapshot.getValue(Tables.class);
+
+                    // Check if the table belongs to the selected restaurant and type
+                    if (table.getRestaurantId() == restaurantId && table.getTypeId() == tableTypeId) {
+                        // Check if the table is in the bookedTables list
+                        if (bookedTableIds.contains(table.getId())) {
+                            bookedTables.add(table);
+                        } else {
+                            availableTables.add(table);
+                        }
+                    }
+                }
+
+                // Proceed to show available tables or handle accordingly
+                if (availableTables.isEmpty()) {
+                    //Toast.makeText(RestaurentDetailActivity.this, "No available tables for this time slot", Toast.LENGTH_SHORT).show();
+                    MotionToast.Companion.darkToast(RestaurentDetailActivity.this,
+                            "Not found ☹️",
+                            "No available tables for this time slot!",
+                            MotionToastStyle.WARNING,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(RestaurentDetailActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
+                } else {
+                    proceedToReserve();
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                Toast.makeText(RestaurentDetailActivity.this, "Error fetching tables", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private String calculateEndTime(String startTime) {
+        // Parse startTime to hours and minutes
+        String[] parts = startTime.split(":");
+        int startHour = Integer.parseInt(parts[0]);
+        int startMinute = Integer.parseInt(parts[1]);
+
+        // Calculate 1h30 later
+        int endHour = startHour + 1;
+        int endMinute = startMinute + 29;
+
+        if (endMinute >= 60) {
+            endHour += 1;
+            endMinute -= 60;
+        }
+
+        return String.format("%02d:%02d", endHour, endMinute);
+    }
+
+    private boolean isWithinTimeRange(String selectedTime, String startTime, String endTime) {
+        // Convert time strings to minutes for comparison
+        int selectedMinutes = timeToMinutes(selectedTime);
+        int startMinutes = timeToMinutes(startTime);
+        int endMinutes = timeToMinutes(endTime);
+
+        // Check if selectedTime is between startTime and endTime
+        return selectedMinutes >= startMinutes && selectedMinutes <= endMinutes;
+    }
+
+    private int timeToMinutes(String time) {
+        String[] parts = time.split(":");
+        int hours = Integer.parseInt(parts[0]);
+        int minutes = Integer.parseInt(parts[1]);
+        return hours * 60 + minutes;
+    }
+
+    private void proceedToReserve() {
+        Intent intent = new Intent(RestaurentDetailActivity.this, ReserveActivity.class);
+        intent.putExtra("selectedDate", selectedDate);
+        intent.putExtra("selectedTime", selectedTime);
+        intent.putExtra("selectedPerson", selectedPerson);
+        intent.putExtra("tableTypeId", tableTypeId);
+        intent.putExtra("table", availableTables.get(0));
+        startActivity(intent);
     }
 
     private void setPickPerson() {

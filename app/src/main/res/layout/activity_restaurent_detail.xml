@@ -354,23 +354,51 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
                 </LinearLayout>
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+                    <CheckBox
+                        android:id="@+id/cbNormal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Normal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <CheckBox
+                        android:id="@+id/cbVip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:text="Vip"
+                        app:layout_constraintBottom_toBottomOf="@+id/cbNormal"
+                        app:layout_constraintStart_toEndOf="@+id/cbNormal"
+                        app:layout_constraintTop_toTopOf="@+id/cbNormal" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/findSlotBtn"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
                     android:background="@drawable/yellow_button_detail_restaurent"
                     android:text="Find Slots"
+                    android:textAlignment="center"
                     android:textColor="@color/white"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textAlignment="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.498"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout13" />
 
-<!--                <EditText-->
+                <!--                <EditText-->
 <!--                    android:id="@+id/editTextDate"-->
 <!--                    android:layout_width="wrap_content"-->
 <!--                    android:layout_height="wrap_content"-->
