@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -20,6 +21,9 @@ import com.google.firebase.auth.AuthResult;
 import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivitySignUpBinding;
+
+import www.sanju.motiontoast.MotionToast;
+import www.sanju.motiontoast.MotionToastStyle;
 
 public class SignupActivity extends BaseActivity {
     ActivitySignUpBinding binding;
@@ -40,17 +44,18 @@ public class SignupActivity extends BaseActivity {
             public void onClick(View v) {
                 String email = binding.emailTxt.getText().toString().trim();
                 String password = binding.passWordTxt.getText().toString().trim();
+                String confirmPassword = binding.rePassWordTxt.getText().toString().trim();
                 String fullName = binding.fullNameEdt.getText().toString().trim();
                 String phoneNumber = binding.phoneNumberEdt.getText().toString().trim();
 
-                if (validateInputs(email, password, fullName, phoneNumber)) {
+                if (validateInputs(email, password, confirmPassword, fullName, phoneNumber)) {
                     signUpUser(email, password, fullName, phoneNumber);
                 }
             }
         });
     }
 
-    private boolean validateInputs(String email, String password, String fullName, String phoneNumber) {
+    private boolean validateInputs(String email, String password, String confirmPassword, String fullName, String phoneNumber) {
         if (fullName.isEmpty()) {
             binding.fullNameEdt.setError("Full Name is required");
             binding.fullNameEdt.requestFocus();
@@ -72,6 +77,12 @@ public class SignupActivity extends BaseActivity {
         if (password.isEmpty() || password.length() < 6) {
             binding.passWordTxt.setError("Password must be at least 6 characters");
             binding.passWordTxt.requestFocus();
+            return false;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            binding.rePassWordTxt.setError("Passwords do not match");
+            binding.rePassWordTxt.requestFocus();
             return false;
         }
 
@@ -98,18 +109,37 @@ public class SignupActivity extends BaseActivity {
                                         @Override
                                         public void onComplete(@NonNull Task<Void> task) {
                                             if (task.isSuccessful()) {
-                                                Toast.makeText(SignupActivity.this, "Sign Up Successful", Toast.LENGTH_SHORT).show();
+                                                MotionToast.Companion.darkToast(SignupActivity.this,
+                                                        "Hurray success 😍",
+                                                        "Account created successfully!",
+                                                        MotionToastStyle.SUCCESS,
+                                                        MotionToast.GRAVITY_BOTTOM,
+                                                        MotionToast.LONG_DURATION,
+                                                        ResourcesCompat.getFont(SignupActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                                                 startActivity(new Intent(SignupActivity.this, SignInActivity.class));
                                                 finish();
                                             } else {
-                                                Toast.makeText(SignupActivity.this, "Sign Up Failed", Toast.LENGTH_SHORT).show();
+                                                MotionToast.Companion.darkToast(SignupActivity.this,
+                                                        "Sign Up Failed☹️",
+                                                        "Failed to create account!",
+                                                        MotionToastStyle.ERROR,
+                                                        MotionToast.GRAVITY_BOTTOM,
+                                                        MotionToast.LONG_DURATION,
+                                                        ResourcesCompat.getFont(SignupActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                                             }
                                         }
                                     });
                         } else {
-                            Toast.makeText(SignupActivity.this, "Sign Up Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            MotionToast.Companion.darkToast(SignupActivity.this,
+                                    "Sign Up Failed☹️",
+                                    "Failed to create account: " + task.getException().getMessage(),
+                                    MotionToastStyle.ERROR,
+                                    MotionToast.GRAVITY_BOTTOM,
+                                    MotionToast.LONG_DURATION,
+                                    ResourcesCompat.getFont(SignupActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                         }
                     }
                 });
     }
 }
+

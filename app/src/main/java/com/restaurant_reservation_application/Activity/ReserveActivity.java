@@ -1,5 +1,6 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -161,7 +162,12 @@ public class ReserveActivity extends BaseActivity {
         dialog.show();
 
         // Set the onClick listener for the Done button
-        dialogView.findViewById(R.id.doneBtn).setOnClickListener(v -> dialog.dismiss());
+        dialogView.findViewById(R.id.doneBtn).setOnClickListener(v -> {
+            dialog.dismiss();
+            Intent intent = new Intent(ReserveActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish(); // Close the current activity
+        });
     }
 
     private void getVariablesDateAndTimeAndPerson() {

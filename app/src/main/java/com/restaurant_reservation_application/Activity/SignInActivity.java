@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -17,6 +18,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityIntroBinding;
 import com.restaurant_reservation_application.databinding.ActivitySignInBinding;
+
+import www.sanju.motiontoast.MotionToast;
+import www.sanju.motiontoast.MotionToastStyle;
 
 public class SignInActivity extends BaseActivity {
     ActivitySignInBinding binding;
@@ -75,11 +79,25 @@ public class SignInActivity extends BaseActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success
+                            MotionToast.Companion.darkToast(SignInActivity.this,
+                                    "Login in success 😍",
+                                    "Success !",
+                                    MotionToastStyle.SUCCESS,
+                                    MotionToast.GRAVITY_BOTTOM,
+                                    MotionToast.LONG_DURATION,
+                                    ResourcesCompat.getFont(SignInActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                             FirebaseUser user = mAuth.getCurrentUser();
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(SignInActivity.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(SignInActivity.this, "Authentication Failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            MotionToast.Companion.darkToast(SignInActivity.this,
+                                    "Authentication Failed ☹️",
+                                    task.getException().getMessage()+"!",
+                                    MotionToastStyle.ERROR,
+                                    MotionToast.GRAVITY_BOTTOM,
+                                    MotionToast.LONG_DURATION,
+                                    ResourcesCompat.getFont(SignInActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                             updateUI(null);
                         }
                     }
