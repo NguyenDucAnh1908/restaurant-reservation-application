@@ -51,16 +51,17 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             }
         });
 
-        holder.binding.title.setTextColor(context.getResources().getColor(com.restaurant_reservation_application.R.color.white));
-        if(selectedPosition==position){
+        holder.binding.title.setTextColor(context.getResources().getColor(R.color.color_Accent));
+        if (selectedPosition == position) {
             holder.binding.pic.setBackgroundResource(0);
-            holder.binding.mailLayout.setBackgroundResource(R.drawable.gray_bg);
+            holder.binding.mailLayout.setBackgroundResource(com.restaurant_reservation_application.R.color.white); // Set background to white
             holder.binding.title.setVisibility(View.VISIBLE);
-        }else{
-            holder.binding.pic.setBackgroundResource(R.drawable.gray_bg);
+        } else {
+            holder.binding.pic.setBackgroundResource(com.restaurant_reservation_application.R.color.white); // Set background to white
             holder.binding.mailLayout.setBackgroundResource(0);
             holder.binding.title.setVisibility(View.GONE);
         }
+
     }
 
     @Override

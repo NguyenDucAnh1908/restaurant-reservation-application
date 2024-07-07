@@ -117,7 +117,7 @@ public class ReserveActivity extends BaseActivity {
         phoneNumberTxt.setText(reservation.getPhoneNumber());
         dateAndTimeTxt.setText(reservation.getDate() + " | " + reservation.getStartTime());
         personTxt.setText(reservation.getPeople() + " Guests");
-        desTxt.setText("Reservation ID: " + reservation.getId());
+        //desTxt.setText("Reservation ID: " + reservation.getId());
 
         // Create the AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);

@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/back_bk"
+    android:background="@color/white"
     tools:context=".Activity.MainActivity">
 
     <ScrollView
@@ -61,13 +61,13 @@
                 android:layout_marginStart="24dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:background="@drawable/gray_bg">
+                android:background="@color/white">
 
                 <EditText
                     android:id="@+id/editTextText2"
                     android:layout_width="0dp"
                     android:layout_height="50dp"
-                    android:background="#00ffffff"
+                    android:background="#A3FFFDD0"
                     android:drawableStart="@drawable/search_icon"
                     android:drawablePadding="8dp"
                     android:ems="10"
@@ -273,7 +273,7 @@
         android:layout_width="match_parent"
         android:layout_height="70dp"
         app:cnb_menuResource="@menu/bottom_nav_menu"
-        android:background="@color/back_bk"
+        android:background="@color/white"
         android:elevation="3dp"
         android:padding="4dp"
         app:cnb_iconSize="20sp"

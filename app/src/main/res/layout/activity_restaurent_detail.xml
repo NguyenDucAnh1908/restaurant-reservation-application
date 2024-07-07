@@ -148,11 +148,11 @@
                         android:id="@+id/imageView14"
                         android:layout_width="23dp"
                         android:layout_height="17dp"
-                        android:layout_marginStart="132dp"
+                        android:layout_marginStart="28dp"
                         app:layout_constraintBottom_toBottomOf="@+id/locationTxt"
                         app:layout_constraintStart_toEndOf="@+id/locationTxt"
                         app:layout_constraintTop_toTopOf="@+id/locationTxt"
-                        app:layout_constraintVertical_bias="1.0"
+                        app:layout_constraintVertical_bias="0.0"
                         app:srcCompat="@drawable/get_direction" />
 
                     <TextView
