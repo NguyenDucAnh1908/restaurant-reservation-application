@@ -1,15 +1,11 @@
 package com.restaurant_reservation_application.Activity;
 
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -22,31 +18,32 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Adapter.MessageAdapter;
 import com.restaurant_reservation_application.Model.Message;
-import com.restaurant_reservation_application.Model.User;
+import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.R;
+import com.restaurant_reservation_application.databinding.ActivityChatBinding;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-public class ChatActivity extends AppCompatActivity {
+
+public class ChatActivity extends BaseActivity {
+    private ActivityChatBinding binding; // Declare binding variable
     private String currentUserId;
     private RecyclerView recyclerView;
     private MessageAdapter messageAdapter;
-    private EditText editTextMessage;
-    private Button buttonSend;
     private DatabaseReference usersRef;
     private DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_chat);
+        binding = ActivityChatBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         // Initialize RecyclerView and adapter
-        recyclerView = findViewById(R.id.recycleViewChat);
+        recyclerView = binding.recycleViewChat;
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         messageAdapter = new MessageAdapter(new ArrayList<>(), this, currentUserId);
         recyclerView.setAdapter(messageAdapter);
@@ -56,20 +53,19 @@ public class ChatActivity extends AppCompatActivity {
         databaseReference = database.getReference("Messages");
         usersRef = database.getReference("Users");
 
-        // Initialize UI components
-        editTextMessage = findViewById(R.id.editMsg);
-        buttonSend = findViewById(R.id.buttonMsg);
+        // Initialize UI components (already handled by binding)
 
-        buttonSend.setOnClickListener(new View.OnClickListener() {
+        binding.buttonMsg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String messageContent = editTextMessage.getText().toString().trim();
+                String messageContent = binding.editMsg.getText().toString().trim();
                 if (!messageContent.isEmpty()) {
                     sendMessage(messageContent);
-                    editTextMessage.setText("");
+                    binding.editMsg.setText("");
                 }
             }
         });
+
         getCurrentUserId();
         loadMessages();
     }
@@ -117,7 +113,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-
     private void sendMessage(final String content) {
         if (currentUserId == null) {
             Log.e("ChatActivity", "Current user ID is null. Cannot send message.");
@@ -137,33 +132,29 @@ public class ChatActivity extends AppCompatActivity {
         fetchSenderInfo(content, messageDate, messageTimestamp);
     }
 
-
     private void fetchSenderInfo(final String content, final String messageDate, final String messageTimestamp) {
         usersRef.child(currentUserId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // Use Map to handle any unexpected data types
-                    Map<String, Object> userMap = (Map<String, Object>) dataSnapshot.getValue();
-                    if (userMap != null) {
-                        String role = String.valueOf(userMap.get("role"));
-                        String email = String.valueOf(userMap.get("email"));
-                        String phoneNumber = String.valueOf(userMap.get("phoneNumber"));
-                        String id = String.valueOf(userMap.get("id"));
-                        String name = String.valueOf(userMap.get("name"));
-                        String password = String.valueOf(userMap.get("password"));
+                    // Use DataSnapshot to fetch user details
+                    String email = dataSnapshot.child("email").getValue(String.class);
+                    String phoneNumber = dataSnapshot.child("phoneNumber").getValue(String.class);
+                    String id = dataSnapshot.child("id").getValue(String.class);
+                    String name = dataSnapshot.child("name").getValue(String.class);
+                    String password = dataSnapshot.child("password").getValue(String.class);
+                    int role = dataSnapshot.child("role").getValue(Integer.class);
 
-                        // Create new User object
-                        User sender = new User(role, email, phoneNumber, id, name, password);
+                    // Create new User object
+                    Users sender = new Users(id, email, name, password, phoneNumber, role);
 
-                        // Create new Message object with sender info
-                        Message newMessage = new Message(content, messageDate, messageTimestamp, sender);
+                    // Create new Message object with sender info
+                    Message newMessage = new Message(content, messageDate, messageTimestamp, sender);
 
-                        // Push new message to Firebase Database
-                        databaseReference.push().setValue(newMessage);
-                    }
+                    // Push new message to Firebase Database
+                    databaseReference.push().setValue(newMessage);
                 } else {
-                    Log.e("ChatActivity", "User not found: " + "1");
+                    Log.e("ChatActivity", "User not found for ID: " + currentUserId);
                 }
             }
 

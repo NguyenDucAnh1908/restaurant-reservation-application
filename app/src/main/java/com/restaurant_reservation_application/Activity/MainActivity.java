@@ -107,7 +107,8 @@ public class MainActivity extends BaseActivity {
                     Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.nav_more) {
-                    // Handle More navigation
+                    Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.chat) {
                     Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                     startActivity(intent);
