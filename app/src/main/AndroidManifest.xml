@@ -30,10 +30,14 @@
             android:name=".Activity.ListRestaurentsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.MainActivity"
+            android:name=".Activity.ChatActivity"
             android:exported="false" />
         <activity
             android:name=".Activity.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".Activity.SignInActivity"
