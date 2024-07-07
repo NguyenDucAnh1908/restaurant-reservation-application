@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -56,7 +59,7 @@ public class RestaurentDetailActivity extends BaseActivity {
     private List<Tables> bookedTables = new ArrayList<>();
 
     private List<Tables> availableTables = new ArrayList<>();
-     ArrayList<Foods> menuItems;
+    ArrayList<Foods> menuItems;
 
 
     @Override
@@ -152,7 +155,22 @@ public class RestaurentDetailActivity extends BaseActivity {
         binding.findSlotBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                checkReservations();
+                if (selectedDate == null || selectedDate.isEmpty() ||
+                        selectedTime == null || selectedTime.isEmpty() ||
+                        selectedPerson == null || selectedPerson.isEmpty() ||
+                        tableTypeId == -1) {
+
+                    MotionToast.Companion.darkToast(RestaurentDetailActivity.this,
+                            "Incomplete Selection ☹️",
+                            "Please select date, time, number of people, and table type!",
+                            MotionToastStyle.ERROR,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(RestaurentDetailActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
+
+                } else {
+                    checkReservations();
+                }
             }
         });
     }
@@ -286,28 +304,67 @@ public class RestaurentDetailActivity extends BaseActivity {
             }
         });
     }
+
     private void showPersonPickerDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Number of People");
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_select_person, null);
+        builder.setView(dialogView);
+        AlertDialog dialog = builder.create();
+        TextView dialogTitle = dialogView.findViewById(R.id.dialogTitle);
+        ListView peopleListView = dialogView.findViewById(R.id.peopleListView);
+        EditText customPeopleInput = dialogView.findViewById(R.id.customPeopleInput);
+        Button okButton = dialogView.findViewById(R.id.okButton);
 
         String[] peopleArray = {"1", "2", "3", "4", "5", "More"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, peopleArray);
+        peopleListView.setAdapter(adapter);
 
-        builder.setItems(peopleArray, new DialogInterface.OnClickListener() {
+        peopleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String selectedPeople = peopleArray[which];
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selectedPeople = peopleArray[position];
                 if (selectedPeople.equals("More")) {
-                    showCustomPeopleInputDialog();
+                    customPeopleInput.setVisibility(View.VISIBLE);
+                    okButton.setVisibility(View.VISIBLE);
                 } else {
-                    selectedPerson = selectedPeople; //
+                    selectedPerson = selectedPeople;
                     binding.personViewTxt.setText(selectedPerson);
+                    dialog.dismiss();
                 }
             }
         });
 
-        AlertDialog dialog = builder.create();
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String customPeople = customPeopleInput.getText().toString();
+                if (!customPeople.isEmpty()) {
+                    int peopleCount = Integer.parseInt(customPeople);
+                    if (peopleCount > 15) {
+                        MotionToast.Companion.createColorToast(RestaurentDetailActivity.this,"Error information!"
+                                ,"People must be less than 15!",
+                                MotionToastStyle.ERROR,
+                                MotionToast.GRAVITY_BOTTOM,
+                                MotionToast.LONG_DURATION,
+                                ResourcesCompat.getFont(RestaurentDetailActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
+
+
+                    } else {
+                        selectedPerson = customPeople;
+                        binding.personViewTxt.setText(selectedPerson);
+                        dialog.dismiss();
+                    }
+                }
+            }
+        });
+
         dialog.show();
     }
+
+
+
+
     private void showCustomPeopleInputDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Enter Number of People");
