@@ -5,7 +5,9 @@ import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
@@ -14,8 +16,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.database.DataSnapshot;
@@ -23,6 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.restaurant_reservation_application.Adapter.FoodListAdapter;
+import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.Restaurents;
 import com.restaurant_reservation_application.Model.Tables;
@@ -49,6 +56,7 @@ public class RestaurentDetailActivity extends BaseActivity {
     private List<Tables> bookedTables = new ArrayList<>();
 
     private List<Tables> availableTables = new ArrayList<>();
+     ArrayList<Foods> menuItems;
 
 
     @Override
@@ -64,7 +72,54 @@ public class RestaurentDetailActivity extends BaseActivity {
         getDateAndTime();
         getPerson();
         setupCheckBoxes();
+        setupShowMenuButton();
     }
+
+    private void setupShowMenuButton() {
+        binding.showMenuBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showMenuDialog();
+            }
+        });
+    }
+
+    private void showMenuDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.activity_list_foods, null);
+        builder.setView(dialogView);
+
+        RecyclerView menuRecyclerView = dialogView.findViewById(R.id.foodsView);
+        menuRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Foods");
+        ArrayList<Foods> foodList = new ArrayList<>();
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot foodSnapshot : snapshot.getChildren()) {
+                    Foods food = foodSnapshot.getValue(Foods.class);
+                    foodList.add(food);
+                }
+                FoodListAdapter adapter = new FoodListAdapter(foodList);
+                menuRecyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(RestaurentDetailActivity.this, "Error fetching menu", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Other existing methods
+
+
     private void setupCheckBoxes() {
         cbNormal = findViewById(R.id.cbNormal);
         cbVip = findViewById(R.id.cbVip);
