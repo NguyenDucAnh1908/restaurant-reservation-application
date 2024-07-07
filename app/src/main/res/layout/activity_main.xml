@@ -26,13 +26,13 @@
                 android:layout_marginEnd="24dp">
 
                 <ImageView
-                    android:id="@+id/imageView9"
+                    android:id="@+id/logoutBtn"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/bell_icon" />
+                    app:srcCompat="@drawable/logout" />
 
                 <TextView
                     android:id="@+id/textView12"
@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:text="Location"
                     android:textColor="@color/color_Accent"
-                    app:layout_constraintEnd_toEndOf="@+id/imageView9"
+                    app:layout_constraintEnd_toEndOf="@+id/logoutBtn"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -52,6 +52,29 @@
                     app:layout_constraintStart_toStartOf="@+id/textView12"
                     app:layout_constraintTop_toBottomOf="@+id/textView12"
                     tools:layout_editor_absoluteY="16dp" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wellcome"
+                    android:textStyle="italic"
+                    android:textSize="17sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/nameTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="name"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_Accent"
+                    app:layout_constraintEnd_toEndOf="@+id/textView9"
+                    app:layout_constraintStart_toStartOf="@+id/textView9"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
