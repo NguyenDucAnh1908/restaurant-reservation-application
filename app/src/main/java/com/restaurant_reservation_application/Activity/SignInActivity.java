@@ -19,7 +19,6 @@ import com.restaurant_reservation_application.databinding.ActivityIntroBinding;
 import com.restaurant_reservation_application.databinding.ActivitySignInBinding;
 
 public class SignInActivity extends BaseActivity {
-
     ActivitySignInBinding binding;
 
     @Override
@@ -89,8 +88,9 @@ public class SignInActivity extends BaseActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            startActivity(new Intent(SignInActivity.this, HistoryActivity.class));
+            startActivity(new Intent(SignInActivity.this, MainActivity.class));
             finish();
         }
     }
 }
+

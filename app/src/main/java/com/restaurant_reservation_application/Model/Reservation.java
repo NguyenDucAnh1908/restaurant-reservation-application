@@ -12,13 +12,13 @@ public class Reservation implements Serializable {
     private String Name;
     private String PhoneNumber;
     private int People;
-    private int UserId;
+    private String UserId;
     private int TableId;
 
     public Reservation() {
     }
 
-    public Reservation(int id, int transactionId, String startTime, String endTime, String date, String name, String phoneNumber, int people, int userId, int tableId) {
+    public Reservation(int id, int transactionId, String startTime, String endTime, String date, String name, String phoneNumber, int people, String userId, int tableId) {
         Id = id;
         TransactionId = transactionId;
         StartTime = startTime;
@@ -95,11 +95,11 @@ public class Reservation implements Serializable {
         People = people;
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return UserId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         UserId = userId;
     }
 

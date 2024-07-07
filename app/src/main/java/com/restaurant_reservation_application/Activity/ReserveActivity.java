@@ -16,6 +16,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +36,7 @@ public class ReserveActivity extends BaseActivity {
     String selectedTime;
     String selectedPerson;
     Tables table;
+    String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class ReserveActivity extends BaseActivity {
 
         getVariablesDateAndTimeAndPerson();
         setVariables();
+        getCurrentUserId();
     }
 
     private void setVariables() {
@@ -111,7 +115,7 @@ public class ReserveActivity extends BaseActivity {
                     int reservationId = currentData.getValue(Integer.class);
 
                     // Create a reservation object
-                    Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, 1, table.getId());
+                    Reservation reservation = new Reservation(reservationId, 1, time, time, date, name, phoneNumber, people, userId, table.getId());
 
                     // Save reservation to Firebase
                     databaseReference.child(String.valueOf(reservationId)).setValue(reservation).addOnCompleteListener(task -> {
@@ -128,7 +132,6 @@ public class ReserveActivity extends BaseActivity {
             }
         });
     }
-
 
     private void showSuccessDialog(Reservation reservation) {
         // Inflate the custom layout
@@ -167,8 +170,22 @@ public class ReserveActivity extends BaseActivity {
         selectedTime = getIntent().getStringExtra("selectedTime");
         selectedPerson = getIntent().getStringExtra("selectedPerson");
         table = (Tables) getIntent().getSerializableExtra("table");
+        //userId = getIntent().getStringExtra("userId");
+
         // Set the date and time in the respective TextViews
         binding.dateAndTimeTxt.setText(selectedDate + " | " + selectedTime);
         binding.peopleTxt.setText(selectedPerson);
     }
+    private void getCurrentUserId() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            userId = user.getUid();
+        } else {
+            // Handle user not logged in case
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            finish(); // Close the activity if user is not logged in
+        }
+    }
 }
+

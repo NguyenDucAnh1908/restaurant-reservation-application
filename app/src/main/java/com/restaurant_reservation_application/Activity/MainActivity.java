@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
 
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +30,7 @@ import com.restaurant_reservation_application.Adapter.SliderAdapter;
 import com.restaurant_reservation_application.Model.BannerModel;
 import com.restaurant_reservation_application.Model.Restaurents;
 import com.restaurant_reservation_application.Model.TableTypes;
+import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityMainBinding;
 import com.restaurant_reservation_application.databinding.ActivitySignInBinding;
@@ -48,6 +51,48 @@ public class MainActivity extends BaseActivity {
         initRecommend();
         initPopular();
         setupBottomNavigationBar();
+        displayUserInfo();
+        logout();
+    }
+
+    private void displayUserInfo() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user != null) {
+            String userId = user.getUid();
+            DatabaseReference userRef = databaseReference.child("Users").child(userId);
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        Users userInfo = snapshot.getValue(Users.class);
+                        if (userInfo != null) {
+                            binding.nameTxt.setText(userInfo.getName());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(MainActivity.this, "Failed to fetch user info", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void logout() {
+        binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutUser();
+            }
+        });
+    }
+    private void logoutUser() {
+        mAuth.signOut();
+        Intent intent = new Intent(MainActivity.this, SignInActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     private void setupBottomNavigationBar() {
