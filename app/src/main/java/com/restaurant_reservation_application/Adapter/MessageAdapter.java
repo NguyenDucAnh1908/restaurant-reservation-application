@@ -5,10 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.restaurant_reservation_application.Model.Message;
 import com.restaurant_reservation_application.R;
 
@@ -77,11 +80,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public static class ChatViewHolder extends RecyclerView.ViewHolder {
-        TextView textMessage, textDate, textTimestamp, txtUserName;
+        TextView textMessage, textDate, textTimestamp, textChatUser;
 
         public ChatViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtUserName = itemView.findViewById(R.id.textChatUser);
+            textChatUser = itemView.findViewById(R.id.textChatUser);
             textMessage = itemView.findViewById(R.id.textChatMessage);
             textDate = itemView.findViewById(R.id.textChatDate);
             textTimestamp = itemView.findViewById(R.id.textChatTimestamp);
@@ -90,6 +93,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bind(Message message) {
             textMessage.setText(message.getContent());
             textTimestamp.setText(message.getTimestamp());
+            textChatUser.setText(message.getSender().getName());
             if (message.isShowDate()) {
                 textDate.setText(message.getDate());
                 textDate.setVisibility(View.VISIBLE);
@@ -100,11 +104,11 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     public static class ReplyViewHolder extends RecyclerView.ViewHolder {
-        TextView textMessage, textDate, textTimestamp, txtUserName;
+        TextView textMessage, textDate, textTimestamp, textReplyUser;
 
         public ReplyViewHolder(@NonNull View itemView) {
             super(itemView);
-            txtUserName = itemView.findViewById(R.id.textReplyUser);
+            textReplyUser = itemView.findViewById(R.id.textReplyUser);
             textMessage = itemView.findViewById(R.id.textReplyMessage);
             textDate = itemView.findViewById(R.id.textReplyDate);
             textTimestamp = itemView.findViewById(R.id.textReplyTimestamp);
@@ -113,6 +117,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void bind(Message message) {
             textMessage.setText(message.getContent());
             textTimestamp.setText(message.getTimestamp());
+            textReplyUser.setText(message.getSender().getName());
             if (message.isShowDate()) {
                 textDate.setText(message.getDate());
                 textDate.setVisibility(View.VISIBLE);
@@ -120,5 +125,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 textDate.setVisibility(View.GONE);
             }
         }
+
     }
+
 }
