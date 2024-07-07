@@ -56,9 +56,37 @@ public class ReserveActivity extends BaseActivity {
     }
 
     private void saveReservationToFirebase(String date, String time, int people) {
-        String name = binding.fullNameTxt.getText().toString();
-        String phoneNumber = binding.phoneNumberTxt.getText().toString();
-        String email = binding.emailTxt.getText().toString(); // Optional field
+        String name = binding.fullNameTxt.getText().toString().trim();
+        String phoneNumber = binding.phoneNumberTxt.getText().toString().trim();
+        String email = binding.emailTxt.getText().toString().trim(); // Optional field
+
+        // Reset error messages
+        binding.fullNameErrorTxt.setVisibility(View.GONE);
+        binding.phoneNumberErrorTxt.setVisibility(View.GONE);
+
+        boolean isValid = true;
+
+        // Validate full name
+        if (name.isEmpty()) {
+            binding.fullNameErrorTxt.setText("Full name is required");
+            binding.fullNameErrorTxt.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+
+        // Validate phone number
+        if (phoneNumber.isEmpty()) {
+            binding.phoneNumberErrorTxt.setText("Phone number is required");
+            binding.phoneNumberErrorTxt.setVisibility(View.VISIBLE);
+            isValid = false;
+        } else if (!phoneNumber.matches("^0[0-9]{9}$")) {
+            binding.phoneNumberErrorTxt.setText("Phone number must be 10 digits starting with 0");
+            binding.phoneNumberErrorTxt.setVisibility(View.VISIBLE);
+            isValid = false;
+        }
+
+        if (!isValid) {
+            return; // Stop further processing if validation fails
+        }
 
         // Reference to ReservationIdCounter node
         DatabaseReference reservationIdReference = database.getReference("ReservationIdCounter");
@@ -100,6 +128,7 @@ public class ReserveActivity extends BaseActivity {
             }
         });
     }
+
 
     private void showSuccessDialog(Reservation reservation) {
         // Inflate the custom layout
