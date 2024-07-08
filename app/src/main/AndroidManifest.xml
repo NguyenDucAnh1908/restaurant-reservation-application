@@ -35,7 +35,9 @@
         <activity
             android:name=".Activity.ListRestaurentsActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".Activity.ChatRoomActivity"
+            android:exported="false" />
         <activity
             android:name=".Activity.ChatActivity"
             android:exported="false" />

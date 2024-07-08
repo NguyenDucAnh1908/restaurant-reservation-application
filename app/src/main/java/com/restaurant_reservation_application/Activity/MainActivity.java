@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity {
                     Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.chat) {
-                    Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                    Intent intent = new Intent(MainActivity.this, ChatRoomActivity.class);
                     startActivity(intent);
                 }
             }

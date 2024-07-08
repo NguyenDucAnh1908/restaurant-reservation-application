@@ -16,6 +16,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Adapter.MessageAdapter;
+import com.restaurant_reservation_application.Model.ChatRoom;
 import com.restaurant_reservation_application.Model.Message;
 import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.databinding.ActivityChatBinding;
@@ -25,13 +26,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 public class ChatActivity extends BaseActivity {
     private ActivityChatBinding binding;
     private String currentUserId;
+    private String chatRoomId;
     private MessageAdapter messageAdapter;
     private DatabaseReference usersRef;
-    private DatabaseReference databaseReference;
+    private DatabaseReference chatRoomsRef;
+    private DatabaseReference messagesRef;
 
     RecyclerView recyclerView;
 
@@ -42,14 +44,18 @@ public class ChatActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("Messages");
+        chatRoomsRef = database.getReference("ChatRooms");
+        messagesRef = database.getReference("Messages");
         usersRef = database.getReference("Users");
 
         initializeRecyclerView();
         initializeUI();
 
         getCurrentUserId();
+        getChatRoomId();
         loadMessages();
+        fetchOtherUsername();
+        binding.backBtn.setOnClickListener(v -> finish());
     }
 
     private void initializeRecyclerView() {
@@ -72,7 +78,7 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void loadMessages() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+        messagesRef.child(chatRoomId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Message> messages = new ArrayList<>();
@@ -132,7 +138,11 @@ public class ChatActivity extends BaseActivity {
                     Users sender = dataSnapshot.getValue(Users.class);
                     if (sender != null) {
                         Message newMessage = new Message(content, messageDate, messageTimestamp, sender);
-                        databaseReference.push().setValue(newMessage);
+                        messagesRef.child(chatRoomId).push().setValue(newMessage);
+
+                        chatRoomsRef.child(chatRoomId).child("lastMessageTimestamp").setValue(System.currentTimeMillis());
+                        chatRoomsRef.child(chatRoomId).child("lastMessageSenderId").setValue(currentUserId);
+                        chatRoomsRef.child(chatRoomId).child("lastMessage").setValue(content);
                     } else {
                         Log.e("ChatActivity", "Sender data is null.");
                     }
@@ -157,5 +167,64 @@ public class ChatActivity extends BaseActivity {
             Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    private void getChatRoomId() {
+        chatRoomId = getIntent().getStringExtra("chatRoomId");
+        if (chatRoomId == null) {
+            createChatRoom();
+        }
+    }
+
+    private void createChatRoom() {
+        chatRoomId = chatRoomsRef.push().getKey();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(currentUserId);
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, userIds, System.currentTimeMillis(), currentUserId, "");
+        chatRoomsRef.child(chatRoomId).setValue(chatRoom);
+    }
+
+    private void fetchOtherUsername() {
+        chatRoomsRef.child(chatRoomId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    ChatRoom chatRoom = dataSnapshot.getValue(ChatRoom.class);
+                    if (chatRoom != null) {
+                        List<String> userIds = chatRoom.getUserIds();
+                        String otherUserId = userIds.get(0).equals(currentUserId) ? userIds.get(1) : userIds.get(0);
+                        usersRef.child(otherUserId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    Users otherUser = dataSnapshot.getValue(Users.class);
+                                    if (otherUser != null) {
+                                        binding.otherUsername.setText(otherUser.getName());
+                                    } else {
+                                        Log.e("ChatActivity", "Other user data is null.");
+                                    }
+                                } else {
+                                    Log.e("ChatActivity", "Other user not found for ID: " + otherUserId);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                Log.e("ChatActivity", "Failed to fetch other user info.", databaseError.toException());
+                            }
+                        });
+                    } else {
+                        Log.e("ChatActivity", "Chat room data is null.");
+                    }
+                } else {
+                    Log.e("ChatActivity", "Chat room not found for ID: " + chatRoomId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ChatActivity", "Failed to fetch chat room info.", databaseError.toException());
+            }
+        });
     }
 }
