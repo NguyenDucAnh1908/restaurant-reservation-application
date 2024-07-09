@@ -5,17 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -24,12 +20,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.restaurant_reservation_application.Api.CreateOrder;
 import com.restaurant_reservation_application.Model.Reservation;
+import com.restaurant_reservation_application.Model.TableTypes;
 import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
 
-import java.util.List;
+import org.json.JSONObject;
+
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class ReserveActivity extends BaseActivity {
     ActivityReserveBinding binding;
@@ -38,16 +40,18 @@ public class ReserveActivity extends BaseActivity {
     String selectedPerson;
     Tables table;
     String userId;
-
+    Button btnReserve;
+    TableTypes tableType;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityReserveBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        btnReserve= (Button) findViewById(R.id.reserbeBtn);
         getVariablesDateAndTimeAndPerson();
         setVariables();
         getCurrentUserId();
+      //  checkoutWithZaloPay();;
     }
 
     private void setVariables() {
@@ -56,10 +60,36 @@ public class ReserveActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+                checkoutWithZaloPay();
             }
         });
     }
+    private void checkoutWithZaloPay() {
+        double totalPrice = calculateTotalPrice(); // Tính toán tổng số tiền cần thanh toán
 
+        // Gọi ZaloPay SDK để thanh toán
+        ZaloPaySDK.getInstance().payOrder(ReserveActivity.this, String.valueOf(totalPrice), "demozpdk://app", new PayOrderListener() {
+
+            public void onPaymentSucceeded(String transactionId, String transToken, String appTransID) {
+                Toast.makeText(ReserveActivity.this, "Thanh toán thành công", Toast.LENGTH_SHORT).show();
+                saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+            }
+            public void onPaymentCanceled(String zpTransToken, String appTransID) {
+
+                Toast.makeText(ReserveActivity.this, "Thanh toán bị hủy", Toast.LENGTH_SHORT).show();
+            }
+
+
+            public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
+
+                Toast.makeText(ReserveActivity.this, "Thanh toán thất bại", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        ZaloPaySDK.getInstance().onResult(intent);
+    }
     private void saveReservationToFirebase(String date, String time, int people) {
         String name = binding.fullNameTxt.getText().toString().trim();
         String phoneNumber = binding.phoneNumberTxt.getText().toString().trim();
@@ -193,5 +223,16 @@ public class ReserveActivity extends BaseActivity {
             finish(); // Close the activity if user is not logged in
         }
     }
+    private double calculateTotalPrice() {
+
+        double price = 0.0;
+        // Example logic to find tableType based on table.getTypeId()
+        if (tableType != null && tableType.getId() == table.getTypeId()) {
+            price = tableType.getPrice();
+        }
+        return price;
+    }
+
+
 }
 
