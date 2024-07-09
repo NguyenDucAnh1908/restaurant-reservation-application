@@ -1,10 +1,12 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -15,6 +17,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.databinding.ActivityEditProfileBinding;
+
+import www.sanju.motiontoast.MotionToast;
+import www.sanju.motiontoast.MotionToastStyle;
 
 public class EditProfileActivity extends BaseActivity {
     ActivityEditProfileBinding binding;
@@ -29,7 +34,7 @@ public class EditProfileActivity extends BaseActivity {
 
         // Initialize Firebase Database reference
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
-
+        getWindow().setStatusBarColor(Color.parseColor("#2B2B2B"));
         getCurrentUserId();
 
         // Set click listener for saveBtn
@@ -106,11 +111,22 @@ public class EditProfileActivity extends BaseActivity {
         usersRef.child(currentUserId).setValue(updatedUser)
                 .addOnSuccessListener(aVoid -> {
                     setResult(RESULT_OK); // Set the result to OK
-                    Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                    MotionToast.Companion.darkToast(EditProfileActivity.this,
+                            "Edit Profile 😍",
+                            "Success !",
+                            MotionToastStyle.SUCCESS,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
                     finish(); // Finish EditProfileActivity after successful update
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(EditProfileActivity.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
-                });
+                    MotionToast.Companion.darkToast(EditProfileActivity.this,
+                            "Authentication Failed ☹️",
+                            e.getMessage()+"!",
+                            MotionToastStyle.ERROR,
+                            MotionToast.GRAVITY_BOTTOM,
+                            MotionToast.LONG_DURATION,
+                            ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));                });
     }
 }
