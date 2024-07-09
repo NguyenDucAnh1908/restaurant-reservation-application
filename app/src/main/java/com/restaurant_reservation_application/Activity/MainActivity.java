@@ -40,6 +40,8 @@ import java.util.ArrayList;
 public class MainActivity extends BaseActivity {
     ActivityMainBinding binding;
 
+    int userRole;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,6 +70,7 @@ public class MainActivity extends BaseActivity {
                         Users userInfo = snapshot.getValue(Users.class);
                         if (userInfo != null) {
                             binding.nameTxt.setText(userInfo.getName());
+                            userRole = userInfo.getRole();;
                         }
                     }
                 }
@@ -110,8 +113,14 @@ public class MainActivity extends BaseActivity {
                     Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
                     startActivity(intent);
                 } else if (id == R.id.chat) {
-                    Intent intent = new Intent(MainActivity.this, ChatRoomActivity.class);
-                    startActivity(intent);
+                    Intent intent;
+                    if (userRole == 1 || userRole == 2) {
+                        intent = new Intent(MainActivity.this, ChatRoomActivity.class);
+                        startActivity(intent);
+                    } else {
+                        intent = new Intent(MainActivity.this, ChatActivity.class);
+                        startActivity(intent);
+                    }
                 }
             }
         });
