@@ -122,7 +122,7 @@ public class EditProfileActivity extends BaseActivity {
                 })
                 .addOnFailureListener(e -> {
                     MotionToast.Companion.darkToast(EditProfileActivity.this,
-                            "Authentication Failed ☹️",
+                            "Edit Profile Failed ☹️",
                             e.getMessage()+"!",
                             MotionToastStyle.ERROR,
                             MotionToast.GRAVITY_BOTTOM,
