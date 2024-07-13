@@ -22,7 +22,7 @@
                 >
 
                 <TextView
-                    android:id="@+id/textView17"
+                    android:id="@+id/subtotalTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="History"
