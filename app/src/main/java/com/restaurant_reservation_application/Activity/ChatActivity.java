@@ -1,5 +1,7 @@
 package com.restaurant_reservation_application.Activity;
 
+import static android.util.Log.e;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -16,6 +18,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Adapter.MessageAdapter;
+import com.restaurant_reservation_application.Model.ChatRoom;
 import com.restaurant_reservation_application.Model.Message;
 import com.restaurant_reservation_application.Model.Users;
 import com.restaurant_reservation_application.databinding.ActivityChatBinding;
@@ -29,9 +32,11 @@ import java.util.Locale;
 public class ChatActivity extends BaseActivity {
     private ActivityChatBinding binding;
     private String currentUserId;
+    private String chatRoomId;
     private MessageAdapter messageAdapter;
     private DatabaseReference usersRef;
-    private DatabaseReference databaseReference;
+    private DatabaseReference chatRoomsRef;
+    private DatabaseReference messagesRef;
 
     RecyclerView recyclerView;
 
@@ -42,14 +47,15 @@ public class ChatActivity extends BaseActivity {
         setContentView(binding.getRoot());
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("Messages");
+        chatRoomsRef = database.getReference("ChatRooms");
+        messagesRef = database.getReference("Messages");
         usersRef = database.getReference("Users");
 
         initializeRecyclerView();
         initializeUI();
-
         getCurrentUserId();
-        loadMessages();
+        getChatRoomId();
+        binding.backBtn.setOnClickListener(v -> finish());
     }
 
     private void initializeRecyclerView() {
@@ -72,7 +78,8 @@ public class ChatActivity extends BaseActivity {
     }
 
     private void loadMessages() {
-        databaseReference.addValueEventListener(new ValueEventListener() {
+
+        messagesRef.child(chatRoomId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 List<Message> messages = new ArrayList<>();
@@ -102,14 +109,14 @@ public class ChatActivity extends BaseActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("ChatActivity", "Failed to load messages.", databaseError.toException());
+                e("ChatActivity", "Failed to load messages.", databaseError.toException());
             }
         });
     }
 
     private void sendMessage(final String content) {
         if (currentUserId == null) {
-            Log.e("ChatActivity", "Current user ID is null. Cannot send message.");
+            e("ChatActivity", "Current user ID is null. Cannot send message.");
             return;
         }
 
@@ -132,18 +139,22 @@ public class ChatActivity extends BaseActivity {
                     Users sender = dataSnapshot.getValue(Users.class);
                     if (sender != null) {
                         Message newMessage = new Message(content, messageDate, messageTimestamp, sender);
-                        databaseReference.push().setValue(newMessage);
+                        messagesRef.child(chatRoomId).push().setValue(newMessage);
+
+                        chatRoomsRef.child(chatRoomId).child("lastMessageTimestamp").setValue(System.currentTimeMillis());
+                        chatRoomsRef.child(chatRoomId).child("lastMessageSenderId").setValue(currentUserId);
+                        chatRoomsRef.child(chatRoomId).child("lastMessage").setValue(content);
                     } else {
-                        Log.e("ChatActivity", "Sender data is null.");
+                        e("ChatActivity", "Sender data is null.");
                     }
                 } else {
-                    Log.e("ChatActivity", "User not found for ID: " + currentUserId);
+                    e("ChatActivity", "User not found for ID: " + currentUserId);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e("ChatActivity", "Failed to fetch sender info.", databaseError.toException());
+                e("ChatActivity", "Failed to fetch sender info.", databaseError.toException());
             }
         });
     }
@@ -158,4 +169,53 @@ public class ChatActivity extends BaseActivity {
             finish();
         }
     }
+
+    private void getChatRoomId() {
+        chatRoomId = getIntent().getStringExtra("chatRoomId");
+        if (chatRoomId == null) {
+            findExistingChatRoom();
+        } else {
+            loadMessages();
+        }
+    }
+
+    private void findExistingChatRoom() {
+        chatRoomsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean roomExists = false;
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    ChatRoom room = snapshot.getValue(ChatRoom.class);
+                    if (room != null && room.getUserIds().contains(currentUserId)) {
+                        chatRoomId = room.getChatroomId();
+                        loadMessages();
+                        roomExists = true;
+                        break;
+                    }
+                }
+
+                if (!roomExists) {
+                    createNewChatRoom();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e("ChatActivity", "Failed to find chat rooms.", databaseError.toException());
+            }
+        });
+    }
+
+
+
+    private void createNewChatRoom() {
+        chatRoomId = chatRoomsRef.push().getKey();
+        List<String> userIds = new ArrayList<>();
+        userIds.add(currentUserId);
+        ChatRoom chatRoom = new ChatRoom(chatRoomId, userIds, System.currentTimeMillis(), currentUserId, "");
+        chatRoomsRef.child(chatRoomId).setValue(chatRoom);
+        loadMessages();
+    }
+
 }
