@@ -104,6 +104,42 @@ public class EditProfileActivity extends BaseActivity {
     }
 
     private void updateUserProfile(String fullName, String phoneNumber, String email) {
+
+        String error = checkValidUserInformation(phoneNumber, email);
+
+        if(error.trim().isEmpty()){
+            // Update user object
+            Users updatedUser = new Users(currentUserId, email, fullName, "", phoneNumber, 0); // Assuming role here, adjust as per your application
+
+            // Update user profile in Firebase
+            usersRef.child(currentUserId).setValue(updatedUser)
+                    .addOnSuccessListener(aVoid -> {
+                        setResult(RESULT_OK); // Set the result to OK
+                        Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+                        finish(); // Finish EditProfileActivity after successful update
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(EditProfileActivity.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
+                    });
+        }else{
+            Toast.makeText(EditProfileActivity.this, error, Toast.LENGTH_SHORT).show();
+        }
+
+
+
+    }
+
+    private String checkValidUserInformation(String phoneNumber, String email){
+        String message = "";
+        String regexPattern = "^(.+)@(\\S+)$";
+        if(phoneNumber.charAt(0)!='0' || phoneNumber.length()!=10){
+            message = "Please enter valid phone number!";
+        }
+        if(!email.matches(regexPattern)){
+            message = "Please enter valid email!";
+        }
+        return message;
+
         // Update user object
         Users updatedUser = new Users(currentUserId, email, fullName, "", phoneNumber, 0); // Assuming role here, adjust as per your application
 

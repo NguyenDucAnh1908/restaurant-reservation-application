@@ -411,8 +411,12 @@ public class RestaurentDetailActivity extends BaseActivity {
         TimePickerDialog dialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                selectedTime = String.format("%02d:%02d", hourOfDay, minute);
-                binding.timeViewTxt.setText(selectedTime);
+                if(hourOfDay > 8 && hourOfDay <20){
+                    selectedTime = String.format("%02d:%02d", hourOfDay, minute);
+                    binding.timeViewTxt.setText(selectedTime);
+                }else {
+                    Toast.makeText(RestaurentDetailActivity.this, "Please choose another time!", Toast.LENGTH_SHORT).show();
+                }
             }
         }, hour, minute, true); // Set 'true' for 24-hour time format, 'false' for AM/PM format
         dialog.show();
@@ -436,9 +440,11 @@ public class RestaurentDetailActivity extends BaseActivity {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 selectedDate = String.format("%02d/%02d/%04d", dayOfMonth, month + 1, year);
+
                 binding.dateViewTxt.setText(selectedDate);
             }
         }, year, month, day);
+        dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         dialog.show();
     }
 
