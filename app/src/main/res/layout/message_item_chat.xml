@@ -1,0 +1,81 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <!-- Ngày của tin nhắn -->
+    <TextView
+        android:id="@+id/textChatDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="June 10"
+        android:textColor="#C0C0C0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Tên người dùng khác -->
+    <TextView
+        android:id="@+id/textChatUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="John Grady Cole"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textChatDate" />
+
+    <!-- Tin nhắn của người dùng khác -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardChatMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="#eef1f6"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardPreventCornerOverlap="false"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textChatUser">
+
+        <LinearLayout
+            android:id="@+id/layoutChatContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp">
+            <!-- Nội dung tin nhắn -->
+            <TextView
+                android:id="@+id/textChatMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:maxWidth="260dp"
+                android:text="Message"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:layout_gravity="start"
+                android:ellipsize="none"
+                android:singleLine="false"
+                android:maxLines="100"
+                android:scrollHorizontally="false" />
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Thời gian của tin nhắn -->
+    <TextView
+        android:id="@+id/textChatTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="8:00"
+        android:textColor="#C0C0C0"
+        android:textSize="11sp"
+        app:layout_constraintBottom_toBottomOf="@+id/cardChatMessage"
+        app:layout_constraintEnd_toStartOf="@+id/cardChatMessage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

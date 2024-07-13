@@ -13,7 +13,63 @@
         android:theme="@style/Theme.Restaurantreservationapplication"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.ReserveDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.DetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.CartActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".Activity.CartActivity" -->
+        <!-- android:theme="@style/Theme.AppCompat.Dialog" -->
+        <!-- android:excludeFromRecents="true" -->
+        <!-- android:label="Shopping Cart"> -->
+        <!-- </activity> -->
+        <activity
+            android:name=".Activity.ListOrderFoodActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Adapter.FoodListAdapter"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ListFoodsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ReserveActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".Activity.HistoryActivity" -->
+        <!-- android:exported="false" /> -->
+        <activity
+            android:name=".Activity.RestaurentDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ListRestaurentsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".Activity.SignInActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

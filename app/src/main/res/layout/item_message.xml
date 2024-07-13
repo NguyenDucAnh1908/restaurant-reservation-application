@@ -1,0 +1,19 @@
+<!-- res/layout/item_message.xml -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/textChatMessage"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:layout_margin="8dp"
+    android:textColor="#12279A"
+    android:textSize="16sp"
+    android:maxWidth="240dp"
+    android:background="@drawable/rounded_corner_background"
+    android:elevation="2dp"
+    android:gravity="start|center_vertical"
+    android:layout_gravity="start"
+    android:shadowColor="#80000000"
+    android:shadowDx="1"
+    android:shadowDy="1"
+    android:shadowRadius="2"/>
+
