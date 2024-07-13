@@ -9,6 +9,8 @@ public class Foods implements Serializable {
     private String Name;
     private double Price;
 
+    private int NumberInCart;
+
     public Foods() {
     }
 
@@ -18,6 +20,15 @@ public class Foods implements Serializable {
         Image = image;
         Name = name;
         Price = price;
+    }
+
+    public Foods(int id, String description, String image, String name, double price, int numberInCart) {
+        Id = id;
+        Description = description;
+        Image = image;
+        Name = name;
+        Price = price;
+        NumberInCart = numberInCart;
     }
 
     public int getId() {
@@ -58,5 +69,13 @@ public class Foods implements Serializable {
 
     public void setPrice(double price) {
         Price = price;
+    }
+
+    public int getNumberInCart() {
+        return NumberInCart;
+    }
+
+    public void setNumberInCart(int numberInCart) {
+        NumberInCart = numberInCart;
     }
 }

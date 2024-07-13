@@ -1,10 +1,14 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,22 +17,32 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
+import com.restaurant_reservation_application.Adapter.FoodListAdapter;
+import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
+import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Reservation;
+import com.restaurant_reservation_application.Model.TableTypes;
 import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReserveActivity extends BaseActivity {
@@ -39,6 +53,7 @@ public class ReserveActivity extends BaseActivity {
     Tables table;
     String userId;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +63,8 @@ public class ReserveActivity extends BaseActivity {
         getVariablesDateAndTimeAndPerson();
         setVariables();
         getCurrentUserId();
+        displayTableTypePrice();
+
     }
 
     private void setVariables() {
@@ -58,12 +75,113 @@ public class ReserveActivity extends BaseActivity {
                 saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
             }
         });
+
+//        binding.foodRd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showMenuDialog();
+//            }
+//        });
+
+        // Ensure only one radio button is selected
+//        binding.foodDefaultRd.setChecked(true);
+//        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.foodDefaultRd) {
+//                    // Handle "Default" selected
+//                } else if (checkedId == R.id.foodRd) {
+//                    // Handle "Order foods" selected
+//                    showMenuDialog();
+//                }
+//            }
+//        });
+
+       // binding.cartBtn.setOnClickListener(v -> startActivity(new Intent(ReserveActivity.this, CartActivity.class)));
+        //binding.cartBtn.setOnClickListener(v -> showCartDialog());
+//        binding.cartBtn.setOnClickListener(v -> {
+//            // Create intent to open CartActivity
+//            Intent intent = new Intent(ReserveActivity.this, CartActivity.class);
+//
+//            // Start CartActivity as a dialog
+//            startActivity(intent);
+//        });
     }
+
+    private void displayTableTypePrice() {
+        if (table != null) {
+            DatabaseReference tableTypeRef = FirebaseDatabase.getInstance().getReference("TableTypes").child(String.valueOf(table.getTypeId()));
+            tableTypeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        TableTypes tableType = snapshot.getValue(TableTypes.class);
+                        if (tableType != null) {
+                            String priceText = tableType.getPrice() + " VND";
+                            binding.orderBookingTxt.setText(priceText);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(ReserveActivity.this, "Error fetching table type information", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void showCartDialog() {
+        // Tạo dialog
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.activity_cart); // Inflate layout của CartActivity
+
+        // Các thiết lập và xử lý sự kiện của dialog
+//        TextView closeBtn = dialog.findViewById(R.id.closeBtn);
+//        closeBtn.setOnClickListener(v -> dialog.dismiss());
+
+        // Hiển thị dialog
+        dialog.show();
+    }
+
+    private void showMenuDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.activity_list_order_food, null);
+        builder.setView(dialogView);
+
+        RecyclerView menuRecyclerView = dialogView.findViewById(R.id.foodsView);
+        menuRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Foods");
+        ArrayList<Foods> foodList = new ArrayList<>();
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot foodSnapshot : snapshot.getChildren()) {
+                    Foods food = foodSnapshot.getValue(Foods.class);
+                    foodList.add(food);
+                }
+                FoodListOrderAdapter adapter = new FoodListOrderAdapter(foodList);
+                menuRecyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ReserveActivity.this, "Error fetching menu", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
 
     private void saveReservationToFirebase(String date, String time, int people) {
         String name = binding.fullNameTxt.getText().toString().trim();
         String phoneNumber = binding.phoneNumberTxt.getText().toString().trim();
-        String email = binding.emailTxt.getText().toString().trim(); // Optional field
+        //String email = binding.emailTxt.getText().toString().trim(); // Optional field
 
         // Reset error messages
         binding.fullNameErrorTxt.setVisibility(View.GONE);

@@ -80,7 +80,7 @@
                 android:textSize="16sp"
                 android:ems="10"
                 android:background="@drawable/edittext_background"
-                android:inputType="text"
+                android:inputType="textPassword"
                 />
 
             <TextView

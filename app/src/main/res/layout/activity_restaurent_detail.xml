@@ -177,7 +177,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout4">
 
                     <TextView
-                        android:id="@+id/textView25"
+                        android:id="@+id/totalAmountTxt"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
@@ -195,10 +195,10 @@
                         android:layout_marginTop="8dp"
                         android:text="Seagrill Restaurant and bar has one mission: to provide guests with a fine and fresh seafood experience. Featuring seasonal and sustainable seafood that is flown in fresh daily, our chef-driven menu proves that no matter when you’re dining, seafood can be truly exceptional. Read More..."
                         android:textSize="14sp"
-                        app:layout_constraintEnd_toEndOf="@+id/textView25"
+                        app:layout_constraintEnd_toEndOf="@+id/totalAmountTxt"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toStartOf="@+id/textView25"
-                        app:layout_constraintTop_toBottomOf="@+id/textView25" />
+                        app:layout_constraintStart_toStartOf="@+id/totalAmountTxt"
+                        app:layout_constraintTop_toBottomOf="@+id/totalAmountTxt" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
