@@ -252,7 +252,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
                 <TextView
                     android:id="@+id/selectFoodTxt"
                     android:layout_width="wrap_content"
@@ -267,8 +266,9 @@
 
                 <ImageButton
                     android:id="@+id/cartBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="47dp"
+                    android:layout_height="53dp"
+                    android:layout_marginEnd="8dp"
                     android:background="@color/white"
                     app:layout_constraintBottom_toBottomOf="@+id/selectFoodTxt"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -276,7 +276,22 @@
                     app:srcCompat="@drawable/cart"
                     app:tint="@color/color_Accent" />
 
+                <TextView
+                    android:id="@+id/cartItemCountTxt"
+                    android:layout_width="12dp"
+                    android:layout_height="20dp"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:text="0"
+                    android:textStyle="bold"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    app:layout_constraintEnd_toEndOf="@id/cartBtn"
+                    app:layout_constraintTop_toTopOf="@id/cartBtn" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -285,11 +300,21 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/viewFoodTxt"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="200dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+<!--                <ProgressBar-->
+<!--                    android:id="@+id/progressBarViewFood"-->
+<!--                    style="?android:attr/progressBarStyle"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </ScrollView>

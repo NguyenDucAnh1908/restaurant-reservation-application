@@ -25,6 +25,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
+import com.restaurant_reservation_application.Adapter.FoodOrderListAdapter;
+import com.restaurant_reservation_application.Helper.ManagmentCart;
+import com.restaurant_reservation_application.Model.FoodOrder;
+import com.restaurant_reservation_application.Model.FoodOrderList;
 import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.Restaurents;
@@ -35,10 +39,15 @@ import com.restaurant_reservation_application.databinding.ActivityReserveDetailB
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReserveDetailActivity extends BaseActivity {
     ActivityReserveDetailBinding binding;
     Reservation currentReservation;
+    private RecyclerView foodRecyclerView;
+    private FoodOrderListAdapter foodOrderListAdapter;
+    private List<FoodOrder> foodOrderList = new ArrayList<>();
+    ManagmentCart managmentCart;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,21 +70,70 @@ public class ReserveDetailActivity extends BaseActivity {
                 // Create intent to open CartActivity
                 Intent intent = new Intent(ReserveDetailActivity.this, CartActivity.class);
 
-                // Get tableId and reservationId from reservation
+                // Get tableId from reservation
                 int tableId = currentReservation.getTableId();
-                int reservationIntentId = currentReservation.getId();
+                int reservationIdIntent = currentReservation.getId();
                 intent.putExtra("tableId", tableId);
-                intent.putExtra("reservationId", reservationId);
+                intent.putExtra("reservationId", reservationIdIntent);
 
-                // Start CartActivity
+                // Start CartActivity as a dialog
                 startActivity(intent);
             } else {
                 Log.e("ReserveDetailActivity", "Reservation is null");
             }
         });
 
+        // Initialize and display number of items in cart
+        // Khởi tạo quản lý giỏ hàng của bạn (ManagmentCart là một lớp giả định)
+        managmentCart = new ManagmentCart(this);
+
+        // Cập nhật số lượng sản phẩm trong giỏ hàng ban đầu
+        displayCartItemCount();
+        initFood();
+    }
 
 
+    private void displayCartItemCount() {
+        ManagmentCart managmentCart = new ManagmentCart(this); // Assuming you have a method to get instance of ManagmentCart
+        int itemCount = managmentCart.getListCart().size();
+        binding.cartItemCountTxt.setText(String.valueOf(itemCount)); // Assuming you have a TextView named cartItemCountTxt in your layout
+    }
+
+
+
+
+    private void initFood() {
+        foodRecyclerView = findViewById(R.id.viewFoodTxt); // Ensure this matches your XML ID
+        foodRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        foodOrderListAdapter = new FoodOrderListAdapter(foodOrderList);
+        foodRecyclerView.setAdapter(foodOrderListAdapter);
+
+        // Load FoodOrderList from Firebase
+        loadFoodOrderList();
+    }
+
+    private void loadFoodOrderList() {
+        DatabaseReference foodOrderListRef = FirebaseDatabase.getInstance().getReference("FoodOrderList");
+        foodOrderListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                foodOrderList.clear();
+                for (DataSnapshot orderSnapshot : snapshot.getChildren()) {
+                    FoodOrderList foodOrderListObj = orderSnapshot.getValue(FoodOrderList.class);
+                    if (foodOrderListObj != null && foodOrderListObj.getTableId() == currentReservation.getTableId()) {
+                        for (FoodOrder foodOrder : foodOrderListObj.getFoodOrders()) {
+                            foodOrderList.add(foodOrder);
+                        }
+                    }
+                }
+                foodOrderListAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("ReserveDetailActivity", "Failed to load food orders", error.toException());
+            }
+        });
     }
 
     private void setVariables() {
@@ -222,6 +280,5 @@ public class ReserveDetailActivity extends BaseActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
-
 }
 

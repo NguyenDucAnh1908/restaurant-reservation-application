@@ -15,6 +15,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.restaurant_reservation_application.Adapter.CartAdapter;
 import com.restaurant_reservation_application.Helper.ManagmentCart;
 import com.restaurant_reservation_application.Model.FoodOrder;
+import com.restaurant_reservation_application.Model.FoodOrderList;
 import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityCartBinding;
@@ -82,40 +83,36 @@ public class CartActivity extends BaseActivity {
     }
 
     private void saveFoodOrderToFirebase() {
-        DatabaseReference foodOrderRef = FirebaseDatabase.getInstance().getReference("FoodOrder");
+        DatabaseReference foodOrderRef = FirebaseDatabase.getInstance().getReference("FoodOrderList");
 
         // Lấy danh sách món ăn trong giỏ hàng
         List<Foods> foodList = managmentCart.getListCart();
-
-        // Tạo một danh sách các tác vụ lưu trữ Firebase để kiểm tra khi tất cả đều hoàn thành
-        List<Task<Void>> tasks = new ArrayList<>();
+        List<FoodOrder> foodOrders = new ArrayList<>();
 
         for (Foods food : foodList) {
-            String foodOrderId = foodOrderRef.push().getKey();
-            FoodOrder foodOrder = new FoodOrder(foodOrderId, food.getId(), tableId);
-            Task<Void> task = foodOrderRef.child(foodOrderId).setValue(foodOrder);
-            tasks.add(task);
+            foodOrders.add(new FoodOrder(food.getId(), food.getDescription(), food.getImage(), food.getName(), food.getPrice()));
         }
 
-        // Chờ tất cả các tác vụ lưu trữ hoàn thành
-        Tasks.whenAll(tasks)
-                .addOnSuccessListener(aVoid -> {
-                    // Lưu thành công tất cả các món ăn
-                    Toast.makeText(CartActivity.this, "Order saved successfully!", Toast.LENGTH_SHORT).show();
+        // Tính tổng tiền
+        double total = managmentCart.getTotalFee() + tax + 10; // 10 là phí giao hàng
 
-                    // Xóa tất cả các item trong giỏ hàng
-                    managmentCart.clearCart();
+        // Tạo một FoodOrderList và lưu vào Firebase
+        String orderId = foodOrderRef.push().getKey();
+        FoodOrderList foodOrderList = new FoodOrderList(orderId, foodOrders, tableId, total);
+        foodOrderRef.child(orderId).setValue(foodOrderList).addOnSuccessListener(aVoid -> {
+            Toast.makeText(CartActivity.this, "Order saved successfully!", Toast.LENGTH_SHORT).show();
 
-                    // Quay lại ReserveDetailActivity và truyền lại reservationId
-                    Intent intent = new Intent(CartActivity.this, ReserveDetailActivity.class);
-                    intent.putExtra("reservationId", reservationId);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    // Có lỗi xảy ra khi lưu đơn hàng
-                    Toast.makeText(CartActivity.this, "Failed to save order", Toast.LENGTH_SHORT).show();
-                });
+            // Xóa tất cả các item trong giỏ hàng
+            managmentCart.clearCart();
+
+            // Quay lại ReserveDetailActivity và truyền lại reservationId
+            Intent intent = new Intent(CartActivity.this, ReserveDetailActivity.class);
+            intent.putExtra("reservationId", reservationId);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(CartActivity.this, "Failed to save order", Toast.LENGTH_SHORT).show();
+        });
     }
 }

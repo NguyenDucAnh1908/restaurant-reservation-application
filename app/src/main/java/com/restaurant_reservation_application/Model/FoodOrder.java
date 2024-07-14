@@ -1,26 +1,22 @@
 package com.restaurant_reservation_application.Model;
 
 public class FoodOrder {
-    private String foodOrderId;
     private int foodId;
-    private int tableId;
+    private String description;
+    private String imageName;
+    private String name;
+    private double price;
 
     public FoodOrder() {
-        // Default constructor required for calls to DataSnapshot.getValue(FoodOrder.class)
+        // Constructor mặc định cần thiết cho Firebase
     }
 
-    public FoodOrder(String foodOrderId, int foodId, int tableId) {
-        this.foodOrderId = foodOrderId;
+    public FoodOrder(int foodId, String description, String imageName, String name, double price) {
         this.foodId = foodId;
-        this.tableId = tableId;
-    }
-
-    public String getFoodOrderId() {
-        return foodOrderId;
-    }
-
-    public void setFoodOrderId(String foodOrderId) {
-        this.foodOrderId = foodOrderId;
+        this.description = description;
+        this.imageName = imageName;
+        this.name = name;
+        this.price = price;
     }
 
     public int getFoodId() {
@@ -31,12 +27,37 @@ public class FoodOrder {
         this.foodId = foodId;
     }
 
-    public int getTableId() {
-        return tableId;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTableId(int tableId) {
-        this.tableId = tableId;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getImageName() {
+        return imageName;
+    }
+
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
     }
 }
+
 
