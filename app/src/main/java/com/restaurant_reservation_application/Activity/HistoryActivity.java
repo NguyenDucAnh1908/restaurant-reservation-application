@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,18 +62,15 @@ public class HistoryActivity extends BaseActivity {
     }
 
     private void getIntenExtra() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         databaseReference = database.getReference("Reservation");
         binding.progressBarHistory.setVisibility(View.VISIBLE);
         ArrayList<Reservation> list = new ArrayList<>();
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference.orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
                     for (DataSnapshot issue : snapshot.getChildren()) {
-//                        Reservation reservation = issue.getValue(Reservation.class);
-//                        if (reservation != null) {
-//                            list.add(reservation);
-//                        }
                         list.add(issue.getValue(Reservation.class));
                     }
                     if (!list.isEmpty()) {
@@ -91,6 +89,7 @@ public class HistoryActivity extends BaseActivity {
             }
         });
     }
+
 
 
     private void setupBottomNavigationBar() {

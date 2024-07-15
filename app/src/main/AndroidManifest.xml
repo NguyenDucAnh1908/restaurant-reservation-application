@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,9 +17,28 @@
         android:theme="@style/Theme.Restaurantreservationapplication"
         tools:targetApi="31">
         <activity
+            android:name=".Activity.LocationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.ReserveDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.DetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Activity.CartActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".Activity.CartActivity" -->
+        <!-- android:theme="@style/Theme.AppCompat.Dialog" -->
+        <!-- android:excludeFromRecents="true" -->
+        <!-- android:label="Shopping Cart"> -->
+        <!-- </activity> -->
+        <activity
+            android:name=".Activity.ListOrderFoodActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.EditProfileActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.ProfileActivity"
             android:exported="false" />
@@ -36,7 +59,6 @@
         <activity
             android:name=".Activity.ListRestaurentsActivity"
             android:exported="false" />
-
         <activity
             android:name=".Activity.ChatActivity"
             android:exported="false" />
@@ -51,6 +73,9 @@
             android:name=".Activity.SignInActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.ChatRoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.HistoryActivity"
             android:exported="false" />
         <activity
@@ -62,31 +87,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="demozpdk"
-                    android:host="app" />
-            </intent-filter>
-        </activity>
-
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAmdrCsGHNCkgGHxjuSuPp0io5dKRLQZRI" />
     </application>
-<uses-permission android:name="android.permission.INTERNET" />
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-<queries>
-<package android:name="vn.com.vng.zalopay" />
-<package android:name="vn.com.vng.zalopay.sbmc" />
-</queries>
 </manifest>

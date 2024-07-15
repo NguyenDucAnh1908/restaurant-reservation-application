@@ -176,29 +176,29 @@
                         app:layout_constraintStart_toStartOf="@+id/phoneNumberTxt"
                         app:layout_constraintEnd_toEndOf="parent" />
 
-                    <TextView
-                        android:id="@+id/textView21"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:text="Email Address (Optional)"
-                        android:textSize="16sp"
-                        app:layout_constraintStart_toStartOf="@+id/phoneNumberTxt"
-                        app:layout_constraintTop_toBottomOf="@+id/phoneNumberTxt" />
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView21"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="16dp"-->
+<!--                        android:text="Email Address (Optional)"-->
+<!--                        android:textSize="16sp"-->
+<!--                        app:layout_constraintStart_toStartOf="@+id/phoneNumberTxt"-->
+<!--                        app:layout_constraintTop_toBottomOf="@+id/phoneNumberTxt" />-->
 
-                    <EditText
-                        android:id="@+id/emailTxt"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="10dp"
-                        android:background="@drawable/input_form_background"
-                        android:ems="10"
-                        android:hint="Enter your email address"
-                        android:inputType="text"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@+id/textView21"
-                        app:layout_constraintTop_toBottomOf="@+id/textView21" />
+<!--                    <EditText-->
+<!--                        android:id="@+id/emailTxt"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="8dp"-->
+<!--                        android:layout_marginEnd="10dp"-->
+<!--                        android:background="@drawable/input_form_background"-->
+<!--                        android:ems="10"-->
+<!--                        android:hint="Enter your email address"-->
+<!--                        android:inputType="text"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="@+id/textView21"-->
+<!--                        app:layout_constraintTop_toBottomOf="@+id/textView21" />-->
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
@@ -212,7 +212,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout7">
 
                     <View
-                        android:id="@+id/view4"
+                        android:id="@+id/viewLine"
                         android:layout_width="wrap_content"
                         android:layout_height="1dp"
                         android:background="@color/color_Accent"
@@ -221,19 +221,272 @@
                         app:layout_constraintTop_toTopOf="parent" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
+<!--                <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                    android:id="@+id/constraintLayout20"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:padding="16dp"-->
+<!--                    app:layout_constraintEnd_toEndOf="parent"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="@+id/constraintLayout8">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView31"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:text="Pre-order food"-->
+<!--                        android:textSize="16sp"-->
+<!--                        android:textStyle="bold"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                    <RadioGroup-->
+<!--                        android:id="@+id/radioGroup"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:orientation="horizontal"-->
+<!--                        app:layout_constraintTop_toBottomOf="@id/textView31"-->
+<!--                        app:layout_constraintStart_toStartOf="parent">-->
+
+<!--                        <RadioButton-->
+<!--                            android:id="@+id/foodDefaultRd"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginTop="8dp"-->
+<!--                            android:text="Default"-->
+<!--                            android:checked="true" />-->
+
+<!--                        <RadioButton-->
+<!--                            android:id="@+id/foodRd"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="match_parent"-->
+<!--                            android:layout_marginStart="16dp"-->
+<!--                            android:text="Order foods" />-->
+<!--                    </RadioGroup>-->
+
+<!--                    <ImageButton-->
+<!--                        android:id="@+id/cartBtn"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        app:layout_constraintBottom_toBottomOf="@+id/radioGroup"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintTop_toTopOf="@+id/radioGroup"-->
+<!--                        app:srcCompat="@drawable/cart"-->
+<!--                        android:background="@color/white"-->
+<!--                        app:tint="@color/color_Accent" />-->
+<!--                </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout24"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@+id/constraintLayout8"
+                    tools:layout_editor_absoluteX="0dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/linearLayout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/reservationFeeLayout"
+                            android:layout_width="200dp"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <TextView
+                                android:id="@+id/textView33"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Reservation fee"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <TextView
+                                android:id="@+id/orderBookingTxt"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0VND"
+                                android:textColor="@color/red"
+                                android:textSize="20sp"
+                                android:textStyle="bold"
+                                app:layout_constraintEnd_toEndOf="@+id/textView33"
+                                app:layout_constraintStart_toStartOf="@+id/textView33"
+                                app:layout_constraintTop_toBottomOf="@+id/textView33" />
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        <!--                        <androidx.constraintlayout.widget.ConstraintLayout-->
+                        <!--                            android:id="@+id/subtotalLayout"-->
+                        <!--                            android:layout_width="match_parent"-->
+                        <!--                            android:layout_height="match_parent">-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/subtotalTxt"-->
+                        <!--                                style="@style/textStyle"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_marginStart="16dp"-->
+                        <!--                                android:layout_marginTop="16dp"-->
+                        <!--                                android:text="Subtotal"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintStart_toStartOf="parent"-->
+                        <!--                                app:layout_constraintTop_toTopOf="parent" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/totaltaxTxt"-->
+                        <!--                                style="@style/textStyle"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_marginTop="8dp"-->
+                        <!--                                android:text="Total Tax"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="@+id/subtotalTxt"-->
+                        <!--                                app:layout_constraintStart_toStartOf="@+id/subtotalTxt"-->
+                        <!--                                app:layout_constraintTop_toBottomOf="@+id/subtotalTxt" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/totafreeTxt"-->
+                        <!--                                style="@style/textStyle"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_marginEnd="16dp"-->
+                        <!--                                android:text="$-"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintBottom_toBottomOf="@+id/subtotalTxt"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                                app:layout_constraintTop_toTopOf="@+id/subtotalTxt" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/taxTxt"-->
+                        <!--                                style="@style/textStyle"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:text="$-"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="@+id/totafreeTxt"-->
+                        <!--                                app:layout_constraintStart_toStartOf="@+id/totafreeTxt"-->
+                        <!--                                app:layout_constraintTop_toBottomOf="@+id/totafreeTxt" />-->
+
+                        <!--                            <View-->
+                        <!--                                android:id="@+id/viewLine1"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="1dp"-->
+                        <!--                                android:layout_marginStart="16dp"-->
+                        <!--                                android:layout_marginTop="8dp"-->
+                        <!--                                android:layout_marginEnd="16dp"-->
+                        <!--                                android:background="@color/color_Accent"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                                app:layout_constraintStart_toStartOf="parent"-->
+
+                        <!--                                app:layout_constraintTop_toBottomOf="@+id/totaltaxTxt" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/totalAmountTxt"-->
+                        <!--                                style="@style/textStyleBold"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_marginTop="8dp"-->
+                        <!--                                android:text="Total"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="@+id/totaltaxTxt"-->
+                        <!--                                app:layout_constraintStart_toStartOf="@+id/totaltaxTxt"-->
+                        <!--                                app:layout_constraintTop_toBottomOf="@+id/viewLine1" />-->
+
+                        <!--                            <TextView-->
+                        <!--                                android:id="@+id/totalTxt"-->
+                        <!--                                style="@style/textStyleBold"-->
+                        <!--                                android:layout_width="wrap_content"-->
+                        <!--                                android:layout_height="wrap_content"-->
+                        <!--                                android:layout_marginEnd="16dp"-->
+                        <!--                                android:layout_marginBottom="8dp"-->
+                        <!--                                android:text="$-"-->
+                        <!--                                android:textSize="15sp"-->
+                        <!--                                app:layout_constraintBottom_toBottomOf="parent"-->
+                        <!--                                app:layout_constraintEnd_toEndOf="parent"-->
+                        <!--                                app:layout_constraintTop_toTopOf="@+id/totalAmountTxt"-->
+                        <!--                                app:layout_constraintVertical_bias="0.0" />-->
+
+                        <!--                        </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:id="@+id/constraintLayout23"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="30dp"-->
+<!--                        app:layout_constraintEnd_toEndOf="parent"-->
+<!--                        app:layout_constraintStart_toStartOf="parent"-->
+<!--                        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textView35"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:text="Pay:"-->
+<!--                            android:textSize="16sp"-->
+<!--                            android:textStyle="bold"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+<!--                        <RadioGroup-->
+<!--                            android:layout_width="258dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="12dp"-->
+<!--                            android:orientation="horizontal"-->
+<!--                            app:layout_constraintBottom_toBottomOf="@+id/textView35"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/textView35"-->
+<!--                            app:layout_constraintTop_toTopOf="@+id/textView35">-->
+
+<!--                            <RadioButton-->
+<!--                                android:id="@+id/radioButton"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="wrap_content"-->
+<!--                                android:text="Pay directly" />-->
+
+<!--                            <RadioButton-->
+<!--                                android:id="@+id/radioButton2"-->
+<!--                                android:layout_width="wrap_content"-->
+<!--                                android:layout_height="20dp"-->
+<!--                                android:text="Pay online" />-->
+<!--                        </RadioGroup>-->
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <View
+                    android:id="@+id/view122"
+                    android:layout_width="wrap_content"
+                    android:layout_height="1dp"
+                    android:background="@color/color_Accent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/constraintLayout24" />
+
                 <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/reserbeBtn"
                     android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="24dp"
+                    android:background="@drawable/yellow_button_detail_restaurent"
                     android:text="Reserve Now"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:background="@drawable/yellow_button_detail_restaurent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/constraintLayout8" />
+                    app:layout_constraintTop_toBottomOf="@+id/view122" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

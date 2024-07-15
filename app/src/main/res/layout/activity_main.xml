@@ -34,24 +34,24 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/logout" />
 
-                <TextView
-                    android:id="@+id/textView12"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Location"
-                    android:textColor="@color/color_Accent"
-                    app:layout_constraintEnd_toEndOf="@+id/logoutBtn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+<!--                <TextView-->
+<!--                    android:id="@+id/textView12"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:text="Location"-->
+<!--                    android:textColor="@color/color_Accent"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/logoutBtn"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent" />-->
 
-                <Spinner
-                    android:id="@+id/locationSp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintEnd_toEndOf="@+id/textView12"
-                    app:layout_constraintStart_toStartOf="@+id/textView12"
-                    app:layout_constraintTop_toBottomOf="@+id/textView12"
-                    tools:layout_editor_absoluteY="16dp" />
+<!--                <Spinner-->
+<!--                    android:id="@+id/locationSp"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:layout_constraintEnd_toEndOf="@+id/textView12"-->
+<!--                    app:layout_constraintStart_toStartOf="@+id/textView12"-->
+<!--                    app:layout_constraintTop_toBottomOf="@+id/textView12"-->
+<!--                    tools:layout_editor_absoluteY="16dp" />-->
 
                 <TextView
                     android:id="@+id/textView9"
@@ -97,7 +97,7 @@
                     android:drawableStart="@drawable/search_icon"
                     android:drawablePadding="8dp"
                     android:ems="10"
-                    android:hint="Street, Address, City...."
+                    android:hint=" Restaurent search"
                     android:inputType="text"
                     android:padding="8dp"
                     android:textColor="@color/color_Accent"

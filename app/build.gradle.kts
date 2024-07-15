@@ -44,11 +44,6 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
-    implementation(fileTree(mapOf(
-        "dir" to "C:\\Users\\Administrator\\Documents\\GitHub\\restaurant-reservation-application\\lib\\zpdk_v2.0.4\\android",
-        "include" to listOf("*.aar", "*.jar")
-    )))
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -60,6 +55,9 @@ dependencies {
     implementation("com.github.ismaeldivita:chip-navigation-bar:1.4.0")
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("com.github.Spikeysanju:MotionToast:1.4")
-    implementation ("com.squareup.okhttp3:okhttp:4.6.0:")
+    implementation ("com.squareup.picasso:picasso:2.71828")
+
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
 
 }

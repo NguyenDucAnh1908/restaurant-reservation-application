@@ -3,13 +3,13 @@ package com.restaurant_reservation_application.Model;
 public class TableTypes {
     private int Id;
     private String ImagePath;
-    private double price;
+    private double Price;
     private String Type;
 
     public TableTypes(int id, String imagePath, double price, String type) {
         Id = id;
         ImagePath = imagePath;
-        this.price = price;
+        Price = price;
         Type = type;
     }
 
@@ -33,11 +33,11 @@ public class TableTypes {
     }
 
     public double getPrice() {
-        return price;
+        return Price;
     }
 
     public void setPrice(double price) {
-        this.price = price;
+        Price = price;
     }
 
     public String getType() {

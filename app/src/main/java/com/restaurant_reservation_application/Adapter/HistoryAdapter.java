@@ -1,16 +1,20 @@
 package com.restaurant_reservation_application.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.TextView;
 
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.restaurant_reservation_application.Activity.ReserveDetailActivity;
+import com.restaurant_reservation_application.Activity.RestaurentDetailActivity;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ViewholderHistoryBinding;
@@ -23,10 +27,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     ArrayList<Reservation> items;
     Context context;
+    private AdapterView.OnItemClickListener listener;
 
     public HistoryAdapter(ArrayList<Reservation> items) {
         this.items = items;
     }
+    public void setOnItemClickListener(AdapterView.OnItemClickListener listener) {
+        this.listener = listener;
+    }
+
 
     @NonNull
     @Override
@@ -44,6 +53,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.titleTxt.setText(reservation.getName());
             holder.dateAndTimeTxt.setText(reservation.getDate() + " | " + reservation.getStartTime());
             holder.peopleTxt.setText(String.valueOf(reservation.getPeople()));
+
+            // Xử lý sự kiện khi người dùng nhấn vào mục
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ReserveDetailActivity.class);
+                    intent.putExtra("reservationId", items.get(position).getId()); // Assuming getId() returns the reservationId
+                    context.startActivity(intent);
+                }
+            });
+
         } else {
             Log.e("AdapterData", "Reservation at position " + position + " is null");
         }

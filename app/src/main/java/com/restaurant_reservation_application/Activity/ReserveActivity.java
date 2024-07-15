@@ -1,37 +1,49 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
-import com.restaurant_reservation_application.Api.CreateOrder;
+import com.google.firebase.database.ValueEventListener;
+import com.restaurant_reservation_application.Adapter.FoodListAdapter;
+import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
+import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.TableTypes;
 import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
 
-import org.json.JSONObject;
-
-import vn.zalopay.sdk.ZaloPayError;
-import vn.zalopay.sdk.ZaloPaySDK;
-import vn.zalopay.sdk.listeners.PayOrderListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReserveActivity extends BaseActivity {
     ActivityReserveBinding binding;
@@ -40,18 +52,19 @@ public class ReserveActivity extends BaseActivity {
     String selectedPerson;
     Tables table;
     String userId;
-    Button btnReserve;
-    TableTypes tableType;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityReserveBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        btnReserve= (Button) findViewById(R.id.reserbeBtn);
+
         getVariablesDateAndTimeAndPerson();
         setVariables();
         getCurrentUserId();
-      //  checkoutWithZaloPay();;
+        displayTableTypePrice();
+
     }
 
     private void setVariables() {
@@ -60,40 +73,115 @@ public class ReserveActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
-                checkoutWithZaloPay();
             }
         });
+
+//        binding.foodRd.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showMenuDialog();
+//            }
+//        });
+
+        // Ensure only one radio button is selected
+//        binding.foodDefaultRd.setChecked(true);
+//        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(RadioGroup group, int checkedId) {
+//                if (checkedId == R.id.foodDefaultRd) {
+//                    // Handle "Default" selected
+//                } else if (checkedId == R.id.foodRd) {
+//                    // Handle "Order foods" selected
+//                    showMenuDialog();
+//                }
+//            }
+//        });
+
+       // binding.cartBtn.setOnClickListener(v -> startActivity(new Intent(ReserveActivity.this, CartActivity.class)));
+        //binding.cartBtn.setOnClickListener(v -> showCartDialog());
+//        binding.cartBtn.setOnClickListener(v -> {
+//            // Create intent to open CartActivity
+//            Intent intent = new Intent(ReserveActivity.this, CartActivity.class);
+//
+//            // Start CartActivity as a dialog
+//            startActivity(intent);
+//        });
     }
-    private void checkoutWithZaloPay() {
-        double totalPrice = calculateTotalPrice(); // Tính toán tổng số tiền cần thanh toán
 
-        // Gọi ZaloPay SDK để thanh toán
-        ZaloPaySDK.getInstance().payOrder(ReserveActivity.this, String.valueOf(totalPrice), "demozpdk://app", new PayOrderListener() {
+    private void displayTableTypePrice() {
+        if (table != null) {
+            DatabaseReference tableTypeRef = FirebaseDatabase.getInstance().getReference("TableTypes").child(String.valueOf(table.getTypeId()));
+            tableTypeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        TableTypes tableType = snapshot.getValue(TableTypes.class);
+                        if (tableType != null) {
+                            String priceText = tableType.getPrice() + " VND";
+                            binding.orderBookingTxt.setText(priceText);
+                        }
+                    }
+                }
 
-            public void onPaymentSucceeded(String transactionId, String transToken, String appTransID) {
-                Toast.makeText(ReserveActivity.this, "Thanh toán thành công", Toast.LENGTH_SHORT).show();
-                saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(ReserveActivity.this, "Error fetching table type information", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
+
+    private void showCartDialog() {
+        // Tạo dialog
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.activity_cart); // Inflate layout của CartActivity
+
+        // Các thiết lập và xử lý sự kiện của dialog
+//        TextView closeBtn = dialog.findViewById(R.id.closeBtn);
+//        closeBtn.setOnClickListener(v -> dialog.dismiss());
+
+        // Hiển thị dialog
+        dialog.show();
+    }
+
+    private void showMenuDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.activity_list_order_food, null);
+        builder.setView(dialogView);
+
+        RecyclerView menuRecyclerView = dialogView.findViewById(R.id.foodsView);
+        menuRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        DatabaseReference myRef = FirebaseDatabase.getInstance().getReference("Foods");
+        ArrayList<Foods> foodList = new ArrayList<>();
+
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot foodSnapshot : snapshot.getChildren()) {
+                    Foods food = foodSnapshot.getValue(Foods.class);
+                    foodList.add(food);
+                }
+                FoodListOrderAdapter adapter = new FoodListOrderAdapter(foodList);
+                menuRecyclerView.setAdapter(adapter);
             }
-            public void onPaymentCanceled(String zpTransToken, String appTransID) {
 
-                Toast.makeText(ReserveActivity.this, "Thanh toán bị hủy", Toast.LENGTH_SHORT).show();
-            }
-
-
-            public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
-
-                Toast.makeText(ReserveActivity.this, "Thanh toán thất bại", Toast.LENGTH_SHORT).show();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(ReserveActivity.this, "Error fetching menu", Toast.LENGTH_SHORT).show();
             }
         });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        ZaloPaySDK.getInstance().onResult(intent);
-    }
+
+
     private void saveReservationToFirebase(String date, String time, int people) {
         String name = binding.fullNameTxt.getText().toString().trim();
         String phoneNumber = binding.phoneNumberTxt.getText().toString().trim();
-        String email = binding.emailTxt.getText().toString().trim(); // Optional field
+        //String email = binding.emailTxt.getText().toString().trim(); // Optional field
 
         // Reset error messages
         binding.fullNameErrorTxt.setVisibility(View.GONE);
@@ -223,16 +311,5 @@ public class ReserveActivity extends BaseActivity {
             finish(); // Close the activity if user is not logged in
         }
     }
-    private double calculateTotalPrice() {
-
-        double price = 0.0;
-        // Example logic to find tableType based on table.getTypeId()
-        if (tableType != null && tableType.getId() == table.getTypeId()) {
-            price = tableType.getPrice();
-        }
-        return price;
-    }
-
-
 }
 
