@@ -6,21 +6,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,8 +24,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.restaurant_reservation_application.Adapter.FoodListAdapter;
 import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
+import com.restaurant_reservation_application.Api.CreateOrder;
+import com.restaurant_reservation_application.Constant.AppInfo;
 import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.TableTypes;
@@ -42,8 +34,17 @@ import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.List;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import vn.zalopay.sdk.Environment;
+import vn.zalopay.sdk.ZaloPayError;
+import vn.zalopay.sdk.ZaloPaySDK;
+import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class ReserveActivity extends BaseActivity {
     ActivityReserveBinding binding;
@@ -64,7 +65,7 @@ public class ReserveActivity extends BaseActivity {
         setVariables();
         getCurrentUserId();
         displayTableTypePrice();
-
+        ZaloPaySDK.init(AppInfo.APP_ID, Environment.SANDBOX);
     }
 
     private void setVariables() {
@@ -72,40 +73,88 @@ public class ReserveActivity extends BaseActivity {
         binding.reserbeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+                //saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+                initiateZaloPayPayment();
             }
         });
 
-//        binding.foodRd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showMenuDialog();
-//            }
-//        });
+    }
+    private void initiateZaloPayPayment() {
 
-        // Ensure only one radio button is selected
-//        binding.foodDefaultRd.setChecked(true);
-//        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId == R.id.foodDefaultRd) {
-//                    // Handle "Default" selected
-//                } else if (checkedId == R.id.foodRd) {
-//                    // Handle "Order foods" selected
-//                    showMenuDialog();
-//                }
-//            }
-//        });
+        try {
 
-       // binding.cartBtn.setOnClickListener(v -> startActivity(new Intent(ReserveActivity.this, CartActivity.class)));
-        //binding.cartBtn.setOnClickListener(v -> showCartDialog());
-//        binding.cartBtn.setOnClickListener(v -> {
-//            // Create intent to open CartActivity
-//            Intent intent = new Intent(ReserveActivity.this, CartActivity.class);
-//
-//            // Start CartActivity as a dialog
-//            startActivity(intent);
-//        });
+
+            // Replace with your logic to calculate total amount (in VND)
+            double amount = calculateTotalAmount();
+
+            // Call the createOrder method to get necessary data for payment
+            CreateOrder orderApi = new CreateOrder();
+            JSONObject data = orderApi.createOrder(String.valueOf(amount));
+            if (data == null) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ReserveActivity.this, "Failed to retrieve payment data", Toast.LENGTH_SHORT).show();
+                    Log.e("ZaloPay", "Failed to retrieve payment data");
+                });
+                return;
+            }
+            String code = data.getString("returncode");
+
+            if ("1".equals(code)) {
+                // Payment data retrieved successfully
+                String token = data.getString("zptranstoken");
+
+                // Initiate ZaloPay payment
+                ZaloPaySDK.getInstance().payOrder(ReserveActivity.this, token, "demozpdk://app", new PayOrderListener() {
+                    @Override
+                    public void onPaymentSucceeded(String transactionId, String transToken, String appTransID) {
+                        // Handle payment succeeded
+                        runOnUiThread(() -> {
+                            Toast.makeText(ReserveActivity.this, "Payment successful", Toast.LENGTH_SHORT).show();
+                            Log.d("ZaloPay", "Payment succeeded. Transaction ID: " + transactionId);
+                            // Optionally, you can proceed with further actions upon successful payment
+                            saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
+                        });
+                    }
+
+                    @Override
+                    public void onPaymentCanceled(String zpTransToken, String appTransID) {
+                        // Handle payment cancellation
+                        runOnUiThread(() -> {
+                            Toast.makeText(ReserveActivity.this, "Payment canceled", Toast.LENGTH_SHORT).show();
+                            Log.d("ZaloPay", "Payment canceled");
+                            // Optionally, handle cancellation scenarios
+                        });
+                    }
+
+                    @Override
+                    public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
+                        // Handle payment error
+                        runOnUiThread(() -> {
+                            Toast.makeText(ReserveActivity.this, "Payment error: " + zaloPayError.getClass(), Toast.LENGTH_SHORT).show();
+                            Log.e("ZaloPay", "Payment error: " + zaloPayError.getClass());
+                            // Optionally, handle error scenarios
+                        });
+                    }
+                });
+            } else {
+                // Handle error in retrieving payment data
+                runOnUiThread(() -> {
+                    Toast.makeText(ReserveActivity.this, "Failed to initiate payment", Toast.LENGTH_SHORT).show();
+                    Log.e("ZaloPay", "Failed to initiate payment. Return code: " + code);
+                });
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            runOnUiThread(() -> {
+                Toast.makeText(ReserveActivity.this, "Failed to initiate payment", Toast.LENGTH_SHORT).show();
+                Log.e("ZaloPay", "Exception while initiating payment: " + e.getMessage());
+            });
+        }
+    }
+    private String generateOrderId() {
+        // Replace with your logic to generate orderId (unique identifier for each transaction)
+        return "Order_" + System.currentTimeMillis();
     }
 
     private void displayTableTypePrice() {
@@ -252,6 +301,17 @@ public class ReserveActivity extends BaseActivity {
         });
     }
 
+    private String generateMac(String data, String key) throws Exception {
+        Mac mac = Mac.getInstance("HmacSHA256");
+        SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), "HmacSHA256");
+        mac.init(secretKeySpec);
+        byte[] hmacData = mac.doFinal(data.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hmacData) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
     private void showSuccessDialog(Reservation reservation) {
         // Inflate the custom layout
         LayoutInflater inflater = LayoutInflater.from(this);
@@ -311,5 +371,19 @@ public class ReserveActivity extends BaseActivity {
             finish(); // Close the activity if user is not logged in
         }
     }
+    private int calculateTotalAmount() {
+        // Replace with your logic to calculate total amount (in VND) as an int
+        String amountText = binding.orderBookingTxt.getText().toString().trim();
+        // Remove " VND" from the text and any extra spaces
+        String amountString = amountText.replace(" VND", "").trim();
+
+        // Parse the amount string to an integer
+        double amountDouble = Double.parseDouble(amountString);
+        int amount = (int) amountDouble; // Convert double to int
+
+        return amount;
+    }
+
+
 }
 

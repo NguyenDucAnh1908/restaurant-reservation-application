@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.packaging.defaultExcludes
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
@@ -44,6 +46,15 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
+
+
+
+
+    implementation(fileTree(mapOf(
+        "dir" to "C:\\Users\\Administrator\\Documents\\GitHub\\restaurant-reservation-application\\app\\libs",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -59,5 +70,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+
+    implementation ("com.squareup.okhttp3:okhttp:4.6.0")
+
 
 }
