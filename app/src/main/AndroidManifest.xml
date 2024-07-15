@@ -50,9 +50,11 @@
             android:exported="false" />
         <activity
             android:name=".Activity.ReserveActivity"
-            android:exported="false" /> <!-- <activity -->
-        <!-- android:name=".Activity.HistoryActivity" -->
-        <!-- android:exported="false" /> -->
+            android:exported="false" />
+
+         <activity
+         android:name=".Activity.HistoryActivity"
+         android:exported="false" />
         <activity
             android:name=".Activity.RestaurentDetailActivity"
             android:exported="false" />
