@@ -1,7 +1,13 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.Manifest;
 import android.app.Dialog;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +24,9 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -36,14 +45,19 @@ import com.google.firebase.database.ValueEventListener;
 import com.restaurant_reservation_application.Adapter.FoodListAdapter;
 import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
 import com.restaurant_reservation_application.Model.Foods;
+import com.restaurant_reservation_application.Model.Notification;
 import com.restaurant_reservation_application.Model.Reservation;
 import com.restaurant_reservation_application.Model.TableTypes;
 import com.restaurant_reservation_application.Model.Tables;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityReserveBinding;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 public class ReserveActivity extends BaseActivity {
     ActivityReserveBinding binding;
@@ -65,6 +79,10 @@ public class ReserveActivity extends BaseActivity {
         getCurrentUserId();
         displayTableTypePrice();
 
+        // Lấy thông báo và tạo kênh thông báo
+        fetchNotificationsFromFirebase();
+        createNotificationChannel();
+
     }
 
     private void setVariables() {
@@ -75,37 +93,6 @@ public class ReserveActivity extends BaseActivity {
                 saveReservationToFirebase(selectedDate, selectedTime, Integer.parseInt(selectedPerson));
             }
         });
-
-//        binding.foodRd.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showMenuDialog();
-//            }
-//        });
-
-        // Ensure only one radio button is selected
-//        binding.foodDefaultRd.setChecked(true);
-//        binding.radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(RadioGroup group, int checkedId) {
-//                if (checkedId == R.id.foodDefaultRd) {
-//                    // Handle "Default" selected
-//                } else if (checkedId == R.id.foodRd) {
-//                    // Handle "Order foods" selected
-//                    showMenuDialog();
-//                }
-//            }
-//        });
-
-       // binding.cartBtn.setOnClickListener(v -> startActivity(new Intent(ReserveActivity.this, CartActivity.class)));
-        //binding.cartBtn.setOnClickListener(v -> showCartDialog());
-//        binding.cartBtn.setOnClickListener(v -> {
-//            // Create intent to open CartActivity
-//            Intent intent = new Intent(ReserveActivity.this, CartActivity.class);
-//
-//            // Start CartActivity as a dialog
-//            startActivity(intent);
-//        });
     }
 
     private void displayTableTypePrice() {
@@ -239,6 +226,7 @@ public class ReserveActivity extends BaseActivity {
                     // Save reservation to Firebase
                     databaseReference.child(String.valueOf(reservationId)).setValue(reservation).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
+                            sendNotificationToUser(userId, "Reservation Successful", "Your reservation has been successfully placed.");
                             showSuccessDialog(reservation);
                         } else {
                             Toast.makeText(ReserveActivity.this, "Failed to save reservation", Toast.LENGTH_SHORT).show();
@@ -250,6 +238,32 @@ public class ReserveActivity extends BaseActivity {
                 }
             }
         });
+    }
+
+    private void sendNotificationToUser(String userId, String title, String message) {
+        DatabaseReference notificationRef = database.getReference("Notifications");
+
+        // Get the current timestamp
+        String timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault()).format(new Date());
+
+        //String notificationId = notificationRef.push().getKey();
+        Random random = new Random();
+        int notificationId = random.nextInt(1000);
+        // Create a notification object
+        Notification notification = new Notification(userId, title, message, timestamp, "unread", notificationId);
+
+        // Generate a unique ID for the notification
+
+
+        if (notificationId != 0) {
+            notificationRef.child(String.valueOf(notificationId)).setValue(notification).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Log.d("Notification", "Notification sent successfully");
+                } else {
+                    Log.e("Notification", "Failed to send notification");
+                }
+            });
+        }
     }
 
     private void showSuccessDialog(Reservation reservation) {
@@ -300,6 +314,7 @@ public class ReserveActivity extends BaseActivity {
         binding.dateAndTimeTxt.setText(selectedDate + " | " + selectedTime);
         binding.peopleTxt.setText(selectedPerson);
     }
+
     private void getCurrentUserId() {
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
@@ -311,5 +326,77 @@ public class ReserveActivity extends BaseActivity {
             finish(); // Close the activity if user is not logged in
         }
     }
+
+
+    private void fetchNotificationsFromFirebase() {
+        DatabaseReference notificationsRef = database.getReference("Notifications");
+        notificationsRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                        Notification notification = dataSnapshot.getValue(Notification.class);
+                        if (notification != null) {
+                            // Kiểm tra nếu thông báo chưa đọc và hiển thị bằng NotificationCompat
+                            if (notification.getStatus().equals("unread")) {
+                                displayNotification(notification);
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("Firebase", "Lỗi khi lấy thông báo: " + error.getMessage());
+            }
+        });
+    }
+
+    private void displayNotification(Notification notification) {
+        // Tạo intent rõ ràng cho một activity trong ứng dụng của bạn
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        // Xây dựng thông báo sử dụng NotificationCompat.Builder
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "default")
+                .setSmallIcon(R.drawable.bell_icon) // Icon nhỏ cho thông báo
+                .setContentTitle(notification.getTitle()) // Tiêu đề của thông báo
+                .setContentText(notification.getMessage()) // Nội dung của thông báo
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT) // Ưu tiên mặc định cho thông báo
+                .setContentIntent(pendingIntent) // PendingIntent khi người dùng nhấn vào thông báo
+                .setAutoCancel(true); // Tự động huỷ thông báo khi người dùng nhấn vào
+
+        // Phát hành thông báo
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        notificationManager.notify(notification.getId(), builder.build());
+    }
+
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "Reservation Notifications";
+            String description = "Notification for reservation status";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel("default", name, importance);
+            channel.setDescription(description);
+
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+
+
 }
 
