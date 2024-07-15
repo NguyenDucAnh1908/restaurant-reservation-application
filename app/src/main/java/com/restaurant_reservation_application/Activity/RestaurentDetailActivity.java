@@ -457,6 +457,15 @@ public class RestaurentDetailActivity extends BaseActivity {
                 .load(object.getImage())
                 .into(binding.pic);
         binding.backBtn.setOnClickListener(v -> onBackPressed());
+
+        binding.getLocationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RestaurentDetailActivity.this, LocationActivity.class);
+                intent.putExtra("location",object.getAddress());
+                startActivity(intent);
+            }
+        });
     }
 
     private void getIntenExtra() {

@@ -57,4 +57,7 @@ dependencies {
     implementation ("com.github.Spikeysanju:MotionToast:1.4")
     implementation ("com.squareup.picasso:picasso:2.71828")
 
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.location)
+
 }
