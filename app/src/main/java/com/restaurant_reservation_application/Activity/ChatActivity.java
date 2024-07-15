@@ -2,6 +2,7 @@ package com.restaurant_reservation_application.Activity;
 
 import static android.util.Log.e;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,10 +18,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.restaurant_reservation_application.Adapter.MessageAdapter;
 import com.restaurant_reservation_application.Model.ChatRoom;
 import com.restaurant_reservation_application.Model.Message;
 import com.restaurant_reservation_application.Model.Users;
+import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityChatBinding;
 
 import java.text.SimpleDateFormat;
@@ -55,6 +58,7 @@ public class ChatActivity extends BaseActivity {
         initializeUI();
         getCurrentUserId();
         getChatRoomId();
+        setupBottomNavigationBar();
         binding.backBtn.setOnClickListener(v -> finish());
     }
 
@@ -207,6 +211,27 @@ public class ChatActivity extends BaseActivity {
         });
     }
 
+    private void setupBottomNavigationBar() {
+        binding.chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int id) {
+                if (id == R.id.nav_home) {
+                    Intent intent = new Intent(ChatActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_notifications) {
+                    // Handle Notifications navigation
+                } else if (id == R.id.nav_history) {
+                    Intent intent = new Intent(ChatActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_more) {
+                    Intent intent = new Intent(ChatActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.chat) {
+                    // Handle Chat navigation
+                }
+            }
+        });
+    }
 
 
     private void createNewChatRoom() {
