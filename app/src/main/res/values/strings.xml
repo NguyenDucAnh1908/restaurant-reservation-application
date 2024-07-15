@@ -22,4 +22,6 @@ Dine-inFlorida
     <string name="sign_up_for">
 Sign up for an account to receive 2% off your bill on every reservation!
 </string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
