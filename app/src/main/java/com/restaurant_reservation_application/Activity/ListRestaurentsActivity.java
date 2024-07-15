@@ -1,5 +1,6 @@
 package com.restaurant_reservation_application.Activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
@@ -42,6 +43,13 @@ public class ListRestaurentsActivity extends BaseActivity {
 
         getIntentExtra();
         initList();
+        binding.getLocationAllRes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ListRestaurentsActivity.this, MapsActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initList() {

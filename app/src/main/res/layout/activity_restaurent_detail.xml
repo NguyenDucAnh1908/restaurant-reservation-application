@@ -153,7 +153,7 @@
                         app:layout_constraintStart_toEndOf="@+id/locationTxt"
                         app:layout_constraintTop_toTopOf="@+id/locationTxt"
                         app:layout_constraintVertical_bias="0.0"
-                        app:srcCompat="@drawable/get_direction" />
+                        app:srcCompat="@drawable/earth_getlocation" />
 
                     <TextView
                         android:id="@+id/getLocationBtn"
