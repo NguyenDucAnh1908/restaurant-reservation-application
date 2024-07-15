@@ -66,6 +66,7 @@ public class ReserveActivity extends BaseActivity {
         getCurrentUserId();
         displayTableTypePrice();
         ZaloPaySDK.init(AppInfo.APP_ID, Environment.SANDBOX);
+        //ZaloPaySDK.init(AppInfo.APP_ID, AppInfo.MAC_KEY);
     }
 
     private void setVariables() {
@@ -83,9 +84,7 @@ public class ReserveActivity extends BaseActivity {
 
         try {
 
-
-            // Replace with your logic to calculate total amount (in VND)
-            double amount = calculateTotalAmount();
+            int amount = 10000;
 
             // Call the createOrder method to get necessary data for payment
             CreateOrder orderApi = new CreateOrder();
@@ -97,11 +96,15 @@ public class ReserveActivity extends BaseActivity {
                 });
                 return;
             }
-            String code = data.getString("returncode");
 
-            if ("1".equals(code)) {
+            Log.d("ZaloPay", "Order data: " + data.toString());
+
+            String code = data.getString("returncode");
+            if (code.equals("1")) {
                 // Payment data retrieved successfully
                 String token = data.getString("zptranstoken");
+
+                Log.d("ZaloPay", "Payment token: " + token);
 
                 // Initiate ZaloPay payment
                 ZaloPaySDK.getInstance().payOrder(ReserveActivity.this, token, "demozpdk://app", new PayOrderListener() {
@@ -130,8 +133,8 @@ public class ReserveActivity extends BaseActivity {
                     public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
                         // Handle payment error
                         runOnUiThread(() -> {
-                            Toast.makeText(ReserveActivity.this, "Payment error: " + zaloPayError.getClass(), Toast.LENGTH_SHORT).show();
-                            Log.e("ZaloPay", "Payment error: " + zaloPayError.getClass());
+                            Toast.makeText(ReserveActivity.this, "Payment error: " + zaloPayError.toString(), Toast.LENGTH_SHORT).show();
+                            Log.e("ZaloPay", "Payment error: " + zaloPayError.toString());
                             // Optionally, handle error scenarios
                         });
                     }
