@@ -75,7 +75,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTxt, dateAndTimeTxt, peopleTxt;
+        TextView titleTxt, dateAndTimeTxt, peopleTxt, tableTypeTxt;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
