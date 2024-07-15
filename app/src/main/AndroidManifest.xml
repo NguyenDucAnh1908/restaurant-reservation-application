@@ -76,10 +76,10 @@
             android:name=".Activity.ChatRoomActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.HistoryActivity"
+            android:name=".Activity.MapsActivity"
             android:exported="false" />
         <activity
-            android:name=".Activity.MapsActivity"
+            android:name=".Activity.IntroActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
