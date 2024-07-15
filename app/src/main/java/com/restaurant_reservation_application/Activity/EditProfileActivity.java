@@ -105,64 +105,54 @@ public class EditProfileActivity extends BaseActivity {
 
     private void updateUserProfile(String fullName, String phoneNumber, String email) {
 
-        //String error = checkValidUserInformation(phoneNumber, email);
+        String error = checkValidUserInformation(fullName, phoneNumber, email);
 
-//        if(error.trim().isEmpty()){
-//            // Update user object
-//            Users updatedUser = new Users(currentUserId, email, fullName, "", phoneNumber, 0); // Assuming role here, adjust as per your application
-//
-//            // Update user profile in Firebase
-//            usersRef.child(currentUserId).setValue(updatedUser)
-//                    .addOnSuccessListener(aVoid -> {
-//                        setResult(RESULT_OK); // Set the result to OK
-//                        Toast.makeText(EditProfileActivity.this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
-//                        finish(); // Finish EditProfileActivity after successful update
-//                    })
-//                    .addOnFailureListener(e -> {
-//                        Toast.makeText(EditProfileActivity.this, "Failed to update profile", Toast.LENGTH_SHORT).show();
-//                    });
-//        }else{
-//            Toast.makeText(EditProfileActivity.this, error, Toast.LENGTH_SHORT).show();
-//        }
+        if(error.trim().isEmpty()){
+            // Update user object
+            Users updatedUser = new Users(currentUserId, email, fullName, "", phoneNumber, 0); // Assuming role here, adjust as per your application
+
+            // Update user profile in Firebase
+            usersRef.child(currentUserId).setValue(updatedUser)
+                    .addOnSuccessListener(aVoid -> {
+                        setResult(RESULT_OK); // Set the result to OK
+                        MotionToast.Companion.darkToast(EditProfileActivity.this,
+                                "Edit Profile 😍",
+                                "Success !",
+                                MotionToastStyle.SUCCESS,
+                                MotionToast.GRAVITY_BOTTOM,
+                                MotionToast.LONG_DURATION,
+                                ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        MotionToast.Companion.darkToast(EditProfileActivity.this,
+                                "Edit Profile Failed ☹️",
+                                e.getMessage()+"!",
+                                MotionToastStyle.ERROR,
+                                MotionToast.GRAVITY_BOTTOM,
+                                MotionToast.LONG_DURATION,
+                                ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));                    });
+        }else{
+            Toast.makeText(EditProfileActivity.this, error, Toast.LENGTH_SHORT).show();
+        }
 
 
 
     }
 
-//    private String checkValidUserInformation(String phoneNumber, String email){
-//        String message = "";
-//        String regexPattern = "^(.+)@(\\S+)$";
-//        if(phoneNumber.charAt(0)!='0' || phoneNumber.length()!=10){
-//            message = "Please enter valid phone number!";
-//        }
-//        if(!email.matches(regexPattern)){
-//            message = "Please enter valid email!";
-//        }
-//        return message;
-//
-//        // Update user object
-//        Users updatedUser = new Users(currentUserId, email, fullName, "", phoneNumber, 0); // Assuming role here, adjust as per your application
-//
-//        // Update user profile in Firebase
-//        usersRef.child(currentUserId).setValue(updatedUser)
-//                .addOnSuccessListener(aVoid -> {
-//                    setResult(RESULT_OK); // Set the result to OK
-//                    MotionToast.Companion.darkToast(EditProfileActivity.this,
-//                            "Edit Profile 😍",
-//                            "Success !",
-//                            MotionToastStyle.SUCCESS,
-//                            MotionToast.GRAVITY_BOTTOM,
-//                            MotionToast.LONG_DURATION,
-//                            ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));
-//                    finish(); // Finish EditProfileActivity after successful update
-//                })
-//                .addOnFailureListener(e -> {
-//                    MotionToast.Companion.darkToast(EditProfileActivity.this,
-//                            "Edit Profile Failed ☹️",
-//                            e.getMessage()+"!",
-//                            MotionToastStyle.ERROR,
-//                            MotionToast.GRAVITY_BOTTOM,
-//                            MotionToast.LONG_DURATION,
-//                            ResourcesCompat.getFont(EditProfileActivity.this, www.sanju.motiontoast.R.font.montserrat_bold));                });
-//    }
+    private String checkValidUserInformation(String fullName, String phoneNumber, String email){
+        String message = "";
+        String regexPattern = "^(.+)@(\\S+)$";
+        if(phoneNumber.charAt(0)!='0' || phoneNumber.length()!=10){
+            message = "Please enter valid phone number!";
+        }
+        if(!email.matches(regexPattern)){
+            message = "Please enter valid email!";
+        }
+        if(fullName.isEmpty()){
+            message = "Please enter your full name!";
+        }
+        return message;
+
+    }
 }

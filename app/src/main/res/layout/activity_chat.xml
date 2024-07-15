@@ -34,7 +34,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/chipNavigationBar"
         android:padding="8dp"
         android:id="@+id/bottom_layout">
 
@@ -52,6 +52,7 @@
             android:hint="Write message here"
             android:padding="10dp"
             android:id="@+id/editMsg"/>
+
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -62,7 +63,22 @@
             app:tint="@color/color_Accent"
             android:id="@+id/buttonMsg"
             android:padding="8dp"
-            android:layout_marginStart="10dp"
-            />
+            android:layout_marginStart="10dp"/>
     </RelativeLayout>
+
+    <!-- Chip Navigation Bar -->
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+        android:id="@+id/chipNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        app:cnb_menuResource="@menu/bottom_nav_menu"
+        android:background="@color/white"
+        android:elevation="3dp"
+        android:padding="4dp"
+        app:cnb_iconSize="20sp"
+        app:cnb_iconColor="@color/color_Accent"
+        app:cnb_radius="50dp"
+        app:cnb_orientationMode="horizontal"
+        app:cnb_unselectedColor="@color/color_Accent"/>
 </RelativeLayout>

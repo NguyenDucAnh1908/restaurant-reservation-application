@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">restaurant-reservation-application</string>
-    <string name="continue_as">
-        Continue as Guest
-    </string>
+    <string name="continue_as">Continue as Guest</string>
 
     <!--    <string name="sign_up_wit">-->
     <!--Sign up With Email-->
@@ -12,16 +10,10 @@
     <!--    <string name="sign_up_wit">-->
     <!--Sign up With Phone-->
     <!--</string>-->
-    <string name="or">
-or
-</string>
-
-    <string name="dine_inflor">
-Dine-inFlorida
-</string>
-    <string name="sign_up_for">
-Sign up for an account to receive 2% off your bill on every reservation!
-</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="or">or</string>
+    <string name="dine_inflor">Dine-inFlorida</string>
+    <string name="sign_up_for">Sign up for an account to receive 2% off your bill on every reservation!</string>
+    <string name="client_id">546360517059-2oqihsuqm4qi8vdds5reqc5qpbap73m8.apps.googleusercontent.com</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

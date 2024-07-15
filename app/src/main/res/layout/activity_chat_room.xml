@@ -35,11 +35,26 @@
     </RelativeLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_below="@id/toolbar"
+        android:layout_above="@id/chipNavigationBar"
         android:padding="10dp"
-        android:id="@+id/search_user_recycler_view"
-        />
+        android:id="@+id/search_user_recycler_view"/>
+    <com.ismaeldivita.chipnavigation.ChipNavigationBar
+        android:id="@+id/chipNavigationBar"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        app:cnb_menuResource="@menu/bottom_nav_menu"
+        android:background="@color/white"
+        android:elevation="3dp"
+        android:padding="4dp"
+        app:cnb_iconSize="20sp"
+        app:cnb_iconColor="@color/color_Accent"
+        app:cnb_radius="50dp"
+        app:cnb_orientationMode="horizontal"
+        app:cnb_unselectedColor="@color/color_Accent"/>
 </RelativeLayout>
 
 
