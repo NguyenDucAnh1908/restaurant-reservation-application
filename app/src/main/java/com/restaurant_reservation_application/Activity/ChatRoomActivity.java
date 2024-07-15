@@ -62,6 +62,8 @@ public class ChatRoomActivity extends BaseActivity {
                     startActivity(intent);
                 } else if (id == R.id.nav_notifications) {
                     // Handle Notifications navigation
+                    Intent intent = new Intent(ChatRoomActivity.this, NotificationActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.nav_history) {
                     Intent intent = new Intent(ChatRoomActivity.this, HistoryActivity.class);
                     startActivity(intent);
