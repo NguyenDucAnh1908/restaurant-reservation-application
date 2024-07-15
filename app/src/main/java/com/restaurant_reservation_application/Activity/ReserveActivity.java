@@ -12,24 +12,15 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,7 +33,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
-import com.restaurant_reservation_application.Adapter.FoodListAdapter;
 import com.restaurant_reservation_application.Adapter.FoodListOrderAdapter;
 import com.restaurant_reservation_application.Model.Foods;
 import com.restaurant_reservation_application.Model.Notification;
@@ -55,7 +45,6 @@ import com.restaurant_reservation_application.databinding.ActivityReserveBinding
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
@@ -66,8 +55,6 @@ public class ReserveActivity extends BaseActivity {
     String selectedPerson;
     Tables table;
     String userId;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,11 +65,9 @@ public class ReserveActivity extends BaseActivity {
         setVariables();
         getCurrentUserId();
         displayTableTypePrice();
-
-        // Lấy thông báo và tạo kênh thông báo
         fetchNotificationsFromFirebase();
         createNotificationChannel();
-
+        checkAndUpdateNotifications();
     }
 
     private void setVariables() {
@@ -254,7 +239,6 @@ public class ReserveActivity extends BaseActivity {
 
         // Generate a unique ID for the notification
 
-
         if (notificationId != 0) {
             notificationRef.child(String.valueOf(notificationId)).setValue(notification).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -264,6 +248,39 @@ public class ReserveActivity extends BaseActivity {
                 }
             });
         }
+    }
+
+    private void checkAndUpdateNotifications() {
+        DatabaseReference notificationRef = FirebaseDatabase.getInstance().getReference("Notifications");
+
+        notificationRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot notificationSnapshot : snapshot.getChildren()) {
+                    Notification notification = notificationSnapshot.getValue(Notification.class);
+                    if (notification != null && notification.getStatus().equals("unread")) {
+                        try {
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+                            Date notificationTime = sdf.parse(notification.getTimestamp());
+                            long currentTime = System.currentTimeMillis();
+                            long notificationTimeMillis = notificationTime.getTime();
+
+                            if ((currentTime - notificationTimeMillis) > 3600000) { // 3600000ms = 60 minutes
+                                // Update status to "Overtime"
+                                notificationRef.child(notificationSnapshot.getKey()).child("status").setValue("Overtime");
+                            }
+                        } catch (Exception e) {
+                            Log.e("NotificationCheck", "Error parsing notification timestamp", e);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("NotificationCheck", "Error checking notifications", error.toException());
+            }
+        });
     }
 
     private void showSuccessDialog(Reservation reservation) {
@@ -330,15 +347,17 @@ public class ReserveActivity extends BaseActivity {
 
     private void fetchNotificationsFromFirebase() {
         DatabaseReference notificationsRef = database.getReference("Notifications");
-        notificationsRef.addValueEventListener(new ValueEventListener() {
+        notificationsRef.orderByChild("timestamp").limitToLast(1).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {
+                    // Iterate over the snapshot to get the latest notification
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Notification notification = dataSnapshot.getValue(Notification.class);
                         if (notification != null) {
-                            // Kiểm tra nếu thông báo chưa đọc và hiển thị bằng NotificationCompat
-                            if (notification.getStatus().equals("unread")) {
+                            // Check if the notification is unread and matches the current user
+                            if (notification.getUserId().equals(userId)) {
+                                // Display the notification
                                 displayNotification(notification);
                             }
                         }
@@ -348,10 +367,11 @@ public class ReserveActivity extends BaseActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("Firebase", "Lỗi khi lấy thông báo: " + error.getMessage());
+                Log.e("Firebase", "Error fetching notifications: " + error.getMessage());
             }
         });
     }
+
 
     private void displayNotification(Notification notification) {
         // Tạo intent rõ ràng cho một activity trong ứng dụng của bạn
@@ -395,7 +415,6 @@ public class ReserveActivity extends BaseActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
-
 
 
 }

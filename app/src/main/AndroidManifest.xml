@@ -71,6 +71,8 @@
             android:name=".Activity.MainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".Activity.NotificationActivity"
+            android:exported="false" />
         <activity
             android:name=".Activity.SignInActivity"
             android:exported="false" />

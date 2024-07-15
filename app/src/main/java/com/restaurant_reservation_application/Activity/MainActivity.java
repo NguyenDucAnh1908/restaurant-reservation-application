@@ -115,6 +115,8 @@ public class MainActivity extends BaseActivity {
                     // Handle Home navigation
                 } else if (id == R.id.nav_notifications) {
                     // Handle Notifications navigation
+                    Intent intent = new Intent(MainActivity.this, NotificationActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.nav_history) {
                     Intent intent = new Intent(MainActivity.this, HistoryActivity.class);
                     startActivity(intent);
