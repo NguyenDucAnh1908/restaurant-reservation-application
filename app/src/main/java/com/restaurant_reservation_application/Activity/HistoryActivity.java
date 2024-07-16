@@ -104,9 +104,10 @@ public class HistoryActivity extends BaseActivity {
                     // startActivity(new Intent(HistoryActivity.this, NotificationsActivity.class));
                 } else if (id == R.id.nav_history) {
                     // Currently on the History screen
+                    startActivity(new Intent(HistoryActivity.this, HistoryActivity.class));
                 } else if (id == R.id.nav_more) {
                     // Handle More navigation
-                    // startActivity(new Intent(HistoryActivity.this, MoreActivity.class));
+                    startActivity(new Intent(HistoryActivity.this, ProfileActivity.class));
                 }
             }
         });

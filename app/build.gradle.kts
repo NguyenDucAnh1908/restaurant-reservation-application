@@ -44,6 +44,7 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -56,7 +57,7 @@ dependencies {
     implementation("androidx.viewpager2:viewpager2:1.1.0")
     implementation ("com.github.Spikeysanju:MotionToast:1.4")
     implementation ("com.squareup.picasso:picasso:2.71828")
-
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
 

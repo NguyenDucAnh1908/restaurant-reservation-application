@@ -35,11 +35,11 @@
                     android:id="@+id/textView3"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="45sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/color_Accent"
                     android:layout_marginEnd="8dp"
-                    android:text="Food" />
+                    android:text="Booking"
+                    android:textColor="@color/color_Accent"
+                    android:textSize="45sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/textView4"
@@ -154,7 +154,7 @@
                     app:srcCompat="@drawable/facebook" />
 
                 <ImageView
-                    android:id="@+id/google"
+                    android:id="@+id/signInByGoogle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

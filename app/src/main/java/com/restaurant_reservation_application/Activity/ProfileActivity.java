@@ -15,7 +15,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.restaurant_reservation_application.Model.Users;
+import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityProfileBinding;
 
 public class ProfileActivity extends BaseActivity {
@@ -30,7 +32,7 @@ public class ProfileActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
+        setupBottomNavigationBar();
         // Initialize Firebase Database reference
         usersRef = FirebaseDatabase.getInstance().getReference("Users");
 
@@ -47,11 +49,13 @@ public class ProfileActivity extends BaseActivity {
         });
 
         binding.logoutBtn.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(ProfileActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(ProfileActivity.this, SignInActivity.class));
+                mAuth.signOut();
+                Intent intent = new Intent(ProfileActivity.this, SignInActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
         });
@@ -107,5 +111,29 @@ public class ProfileActivity extends BaseActivity {
             loadUserProfile();
         }
     }
-
+    private void setupBottomNavigationBar() {
+        binding.chipNavigationBar.setOnItemSelectedListener(new ChipNavigationBar.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(int id) {
+                if (id == R.id.nav_home) {
+                    Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_notifications) {
+                    // Handle Notifications navigation
+                    Intent intent = new Intent(ProfileActivity.this, NotificationActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_history) {
+                    Intent intent = new Intent(ProfileActivity.this, HistoryActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.nav_more) {
+                    Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+                    startActivity(intent);
+                } else if (id == R.id.chat) {
+                    Intent intent;
+                    intent = new Intent(ProfileActivity.this, ChatActivity.class);
+                    startActivity(intent);
+                }
+            }
+        });
+    }
 }
