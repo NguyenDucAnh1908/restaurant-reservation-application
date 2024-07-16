@@ -45,6 +45,11 @@ dependencies {
     implementation(libs.firebase.database)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.messaging)
+    implementation(fileTree(mapOf(
+        "dir" to "D:\\Android",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf("")
+    )))
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -60,5 +65,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(libs.play.services.maps)
     implementation(libs.play.services.location)
+    implementation("com.squareup.okhttp3:okhttp:4.6.0")
+    implementation("commons-codec:commons-codec:1.14")
 
 }
