@@ -29,6 +29,11 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
+import com.restaurant_reservation_application.Model.Users;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.restaurant_reservation_application.R;
 import com.restaurant_reservation_application.databinding.ActivityIntroBinding;
@@ -140,9 +145,40 @@ public class SignInActivity extends BaseActivity {
 
     private void updateUI(FirebaseUser user) {
         if (user != null) {
-            startActivity(new Intent(SignInActivity.this, MainActivity.class));
-            finish();
+            String userId = user.getUid();
+            DatabaseReference userRef = databaseReference.child("Users").child(userId);
+
+            userRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        Users userInfo = snapshot.getValue(Users.class);
+                        if (userInfo != null) {
+                            String restaurantId = userInfo.getRestaurantId();
+                            switch (userInfo.getRole()){
+                                case 0:
+                                    startActivity(new Intent(SignInActivity.this, MainActivity.class));
+                                    break;
+                                case 1:
+                                    Intent adminIntent = new Intent(SignInActivity.this, ListTableBookingAdminActivity.class);
+                                    adminIntent.putExtra("restaurantId", restaurantId);
+                                    startActivity(adminIntent);
+                                    break;
+                                default:
+                                    Toast.makeText(SignInActivity.this, "Role of user is invalid", Toast.LENGTH_SHORT).show();
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Toast.makeText(SignInActivity.this, "Failed to fetch user info", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
+        finish();
     }
 
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
