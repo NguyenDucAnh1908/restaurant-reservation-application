@@ -120,6 +120,8 @@ public class ProfileActivity extends BaseActivity {
                     startActivity(intent);
                 } else if (id == R.id.nav_notifications) {
                     // Handle Notifications navigation
+                    Intent intent = new Intent(ProfileActivity.this, NotificationActivity.class);
+                    startActivity(intent);
                 } else if (id == R.id.nav_history) {
                     Intent intent = new Intent(ProfileActivity.this, HistoryActivity.class);
                     startActivity(intent);
