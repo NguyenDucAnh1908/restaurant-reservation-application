@@ -9,8 +9,27 @@ public class Users implements Serializable {
     private String Password;
     private String PhoneNumber;
     private int Role;
+    private String RestaurantId;
 
     public Users() {
+    }
+
+    public String getRestaurantId() {
+        return RestaurantId;
+    }
+
+    public void setRestaurantId(String restaurantId) {
+        RestaurantId = restaurantId;
+    }
+
+    public Users(String id, String email, String name, String password, String phoneNumber, int role, String restaurantId) {
+        Id = id;
+        Email = email;
+        Name = name;
+        Password = password;
+        PhoneNumber = phoneNumber;
+        Role = role;
+        RestaurantId = restaurantId;
     }
 
     public Users(String id, String email, String name, String password, String phoneNumber, int role) {
