@@ -79,6 +79,9 @@
             android:name=".Activity.HistoryActivity"
             android:exported="false" />
         <activity
+            android:name=".Activity.ListTableBookingAdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activity.IntroActivity"
             android:exported="true">
             <intent-filter>
